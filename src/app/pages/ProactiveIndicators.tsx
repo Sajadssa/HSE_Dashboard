@@ -47,22 +47,22 @@ export function ProactiveIndicators() {
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px',
             borderBottom: `1px solid ${border}`, fontWeight: 700, fontSize: 12, color: txt1,
-            fontFamily: "'Inter',sans-serif",
+            fontFamily: "'Vazirmatn',sans-serif",
           }}>
             🏃 Stop / Smart Card
           </div>
           <div style={{ padding: 16, textAlign: 'center' }}>
-            <div style={{ fontFamily: "'Orbitron',monospace", fontWeight: 900, fontSize: 'clamp(32px,4.5vw,52px)', color: '#f59e0b' }}>
+            <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontWeight: 900, fontSize: 'clamp(32px,4.5vw,52px)', color: '#f59e0b' }}>
               {fmt(m.SC)}
             </div>
-            <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, color: txt2, margin: '3px 0' }}>Current Period</div>
+            <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 9, color: txt2, margin: '3px 0' }}>Current Period</div>
             <div style={{
               marginTop: 10, padding: 9,
               background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.22)',
               borderRadius: 9,
             }}>
-              <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, color: txt2 }}>Cumulative (incl. historical)</div>
-              <div style={{ fontFamily: "'Orbitron',monospace", fontWeight: 900, fontSize: 24, color: '#f59e0b' }}>
+              <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 9, color: txt2 }}>Cumulative (incl. historical)</div>
+              <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontWeight: 900, fontSize: 24, color: '#f59e0b' }}>
                 {fmt(m.CombSC)}
               </div>
             </div>
@@ -77,22 +77,22 @@ export function ProactiveIndicators() {
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px',
             borderBottom: `1px solid ${border}`, fontWeight: 700, fontSize: 12, color: txt1,
-            fontFamily: "'Inter',sans-serif",
+            fontFamily: "'Vazirmatn',sans-serif",
           }}>
             📚 HSE Training (Man-hrs)
           </div>
           <div style={{ padding: 16, textAlign: 'center' }}>
-            <div style={{ fontFamily: "'Orbitron',monospace", fontWeight: 900, fontSize: 'clamp(32px,4.5vw,52px)', color: '#3b82f6' }}>
+            <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontWeight: 900, fontSize: 'clamp(32px,4.5vw,52px)', color: '#3b82f6' }}>
               {fmt(m.HTR)}
             </div>
-            <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, color: txt2, margin: '3px 0' }}>Man-Hours This Period</div>
+            <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 9, color: txt2, margin: '3px 0' }}>Man-Hours This Period</div>
             <div style={{
               marginTop: 10, padding: 9,
               background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.22)',
               borderRadius: 9,
             }}>
-              <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, color: txt2 }}>Cumulative</div>
-              <div style={{ fontFamily: "'Orbitron',monospace", fontWeight: 900, fontSize: 24, color: '#3b82f6' }}>
+              <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 9, color: txt2 }}>Cumulative</div>
+              <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontWeight: 900, fontSize: 24, color: '#3b82f6' }}>
                 {fmt(m.CombHTR)}
               </div>
             </div>
@@ -123,7 +123,7 @@ export function ProactiveIndicators() {
                   border: `1px solid ${border}`, borderRadius: 9, padding: 9, textAlign: 'center',
                 }}>
                   <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 8, color: txt2, marginBottom: 3 }}>{p.label}</div>
-                  <div style={{ fontFamily: "'Orbitron',monospace", fontWeight: 900, fontSize: 18, color: p.color }}>
+                  <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontWeight: 900, fontSize: 18, color: p.color }}>
                     {fmt(p.val)}
                   </div>
                 </div>
@@ -134,11 +134,11 @@ export function ProactiveIndicators() {
               background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.22)',
               borderRadius: 9,
             }}>
-              <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, color: txt2 }}>Total PTW</div>
-              <div style={{ fontFamily: "'Orbitron',monospace", fontWeight: 900, fontSize: 26, color: '#a78bfa' }}>
+              <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 9, color: txt2 }}>Total PTW</div>
+              <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontWeight: 900, fontSize: 26, color: '#a78bfa' }}>
                 {fmt(m.PTWTot)}
               </div>
-              <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, color: txt2 }}>
+              <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 9, color: txt2 }}>
                 Cumul: {fmt(m.CombPTW)}
               </div>
             </div>

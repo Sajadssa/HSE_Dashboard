@@ -94,16 +94,16 @@ export function ReactiveIndicators() {
             borderRadius: 13, padding: 16, textAlign: 'center',
             backdropFilter: 'blur(12px)',
           }}>
-            <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, color: txt2, fontWeight: 600, marginBottom: 8 }}>
+            <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 9, color: txt2, fontWeight: 600, marginBottom: 8 }}>
               {r.sub}
             </div>
             <div style={{
-              fontFamily: "'Orbitron',monospace", fontWeight: 900,
+              fontFamily: "'Vazirmatn',sans-serif", fontWeight: 900,
               fontSize: 'clamp(18px,2vw,26px)', color: '#06b6d4',
             }}>
               {r.val}
             </div>
-            <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, color: txt2, marginTop: 4 }}>{r.desc}</div>
+            <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 9, color: txt2, marginTop: 4 }}>{r.desc}</div>
             {r.badge !== null && (
               <div style={{ marginTop: 9 }}>
                 <span style={{

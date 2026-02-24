@@ -29,7 +29,7 @@ export function ChartTooltip(props: any) {
             <div style={{ width: 10, height: 10, background: p.color || '#999', borderRadius: 3 }} />
             <div style={{ color: txt, opacity: 0.9 }}>{p.name}</div>
           </div>
-          <div style={{ fontFamily: "'Orbitron',monospace", fontWeight: 800 }}>{typeof p.value === 'number' ? p.value.toLocaleString() : p.value}</div>
+          <div style={{ fontFamily: "'Inter',sans-serif", fontWeight: 800 }}>{typeof p.value === 'number' ? p.value.toLocaleString() : p.value}</div>
         </div>
       ))}
     </div>

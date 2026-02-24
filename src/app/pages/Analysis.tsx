@@ -12,7 +12,7 @@ import { TrendingUp, TrendingDown } from 'lucide-react';
 function fmt(n: number) { return n.toLocaleString(); }
 
 export function Analysis() {
-  const { metrics: m, monthly, darkMode, snowEffectEnabled } = useDashboard();
+  const { metrics: m, prevMetrics: pm, monthly, darkMode, snowEffectEnabled } = useDashboard();
 
   const txt1   = darkMode ? '#e2e8f0' : '#0f1e35';
   const txt2   = darkMode ? '#64748b' : '#4a6080';
@@ -38,12 +38,12 @@ export function Analysis() {
   const Card = ({ title, children }: { title: ReactNode; children: ReactNode }) => (
     <div style={{
       background: cardBg, border: `1px solid ${border}`,
-      borderRadius: 14, overflow: 'hidden', backdropFilter: 'blur(12px)',
+      borderRadius: 14, overflow: 'visible', backdropFilter: 'blur(12px)',
     }}>
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8, padding: '13px 16px',
         borderBottom: `1px solid ${border}`, fontWeight: 700, fontSize: 12, color: txt1,
-        fontFamily: "'Orbitron',monospace",
+        fontFamily: "'Inter',sans-serif",
         letterSpacing: '0.5px',
       }}>
         {title}
@@ -274,12 +274,6 @@ export function Analysis() {
         marginBottom: 20,
       }}>
         {(() => {
-          const getPrevValue = (key: string): number => {
-            if (monthly.length < 2) return 0;
-            const prev = monthly[monthly.length - 2];
-            return (prev as any)[key] as number || 0;
-          };
-
           const calculateChange = (current: number, previous: number) => {
             if (previous === 0) return { change: 0, trend: 'neutral' as const };
             const change = ((current - previous) / previous) * 100;
@@ -289,16 +283,16 @@ export function Analysis() {
             };
           };
 
-          const metrics = [
-            { label: 'LTI Cases', key: 'LTI', current: m.LTI, icon: '🚑', color: '#ef4444', goodTrend: 'down' },
-            { label: 'Near Miss', key: 'NM', current: m.NM, icon: '⚡', color: '#f59e0b', goodTrend: 'down' },
-            { label: 'Training MH', key: 'HTR', current: m.HTR, icon: '📚', color: '#10b981', goodTrend: 'up' },
-            { label: 'Stop Cards', key: 'SC', current: m.SC, icon: '🏃', color: '#f59e0b', goodTrend: 'up' },
+          const metricsCfg = [
+            { label: 'LTI Cases', key: 'LTI', current: m.LTI, prev: pm.LTI, icon: '🚑', color: '#ef4444', goodTrend: 'down' as const },
+            { label: 'Near Miss', key: 'NM', current: m.NM, prev: pm.NM, icon: '⚡', color: '#f59e0b', goodTrend: 'down' as const },
+            { label: 'Training MH', key: 'HTR', current: m.HTR, prev: pm.HTR, icon: '📚', color: '#10b981', goodTrend: 'up' as const },
+            { label: 'Stop Cards', key: 'SC', current: m.SC, prev: pm.SC, icon: '🏃', color: '#f59e0b', goodTrend: 'up' as const },
           ];
 
-          return metrics.map(metric => {
-            const prev = getPrevValue(metric.key);
-            const { change, trend } = calculateChange(metric.current, prev);
+          return metricsCfg.map(metric => {
+            const previous = metric.prev ?? 0;
+            const { change, trend } = calculateChange(metric.current, previous);
             const isGood = (metric.goodTrend === 'up' && trend === 'up') || (metric.goodTrend === 'down' && trend === 'down');
 
             return (
@@ -315,10 +309,10 @@ export function Analysis() {
                 }}
               >
                 <div style={{ fontSize: 18, marginBottom: 6 }}>{metric.icon}</div>
-                <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, color: txt2, marginBottom: 4 }}>
+                <div style={{ fontFamily: "'Vazir','Vazirmatn',sans-serif", fontSize: 10, color: txt2, marginBottom: 4 }}>
                   {metric.label}
                 </div>
-                <div style={{ fontFamily: "'Orbitron',monospace", fontWeight: 900, fontSize: 16, color: metric.color, marginBottom: 6 }}>
+                <div style={{ fontFamily: "'Vazir','Vazirmatn',sans-serif", fontWeight: 900, fontSize: 16, color: metric.color, marginBottom: 6 }}>
                   {fmt(metric.current)}
                 </div>
                 {trend !== 'neutral' && (
@@ -327,7 +321,7 @@ export function Analysis() {
                     padding: '4px 8px', borderRadius: 6,
                     background: trend === 'up' ? 'rgba(239,68,68,0.15)' : 'rgba(16,185,129,0.15)',
                     color: trend === 'up' ? '#ef4444' : '#10b981',
-                    fontFamily: "'Orbitron',monospace",
+                    fontFamily: "'Vazir','Vazirmatn',sans-serif",
                     fontSize: 10,
                     fontWeight: 700,
                   }}>
@@ -350,7 +344,7 @@ export function Analysis() {
               borderRadius: 9,
             }}>
               <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, color: '#10b981', fontWeight: 600, marginBottom: 3 }}>✅ Proactive Total</div>
-              <div style={{ fontFamily: "'Orbitron',monospace", fontWeight: 900, fontSize: 'clamp(24px,3.5vw,40px)', color: '#10b981' }}>
+              <div style={{ fontFamily: "'Inter',sans-serif", fontWeight: 900, fontSize: 'clamp(24px,3.5vw,40px)', color: '#10b981' }}>
                 {fmt(m.TotProac)}
               </div>
             </div>
@@ -361,14 +355,14 @@ export function Analysis() {
               borderRadius: 9,
             }}>
               <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, color: '#ef4444', fontWeight: 600, marginBottom: 3 }}>⚠️ Reactive Total</div>
-              <div style={{ fontFamily: "'Orbitron',monospace", fontWeight: 900, fontSize: 'clamp(24px,3.5vw,40px)', color: '#ef4444' }}>
+              <div style={{ fontFamily: "'Inter',sans-serif", fontWeight: 900, fontSize: 'clamp(24px,3.5vw,40px)', color: '#ef4444' }}>
                 {fmt(m.TotReac)}
               </div>
             </div>
           </div>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, color: txt2 }}>Safety Culture Ratio — نسبت فرهنگ ایمنی</div>
-            <div style={{ fontFamily: "'Orbitron',monospace", fontWeight: 900, fontSize: 'clamp(20px,3vw,32px)', color: '#06b6d4' }}>
+            <div style={{ fontFamily: "'Inter',sans-serif", fontWeight: 900, fontSize: 'clamp(20px,3vw,32px)', color: '#06b6d4' }}>
               {m.LLRatio} : 1
             </div>
             <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 9, color: txt2, margin: '5px 0 9px' }}>

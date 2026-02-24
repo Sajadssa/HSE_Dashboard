@@ -49,7 +49,7 @@ export function IndicatorCard({ icon, label, value, status = 'zero', dark = true
         {label}
       </div>
       <div style={{
-        fontFamily: "'Orbitron',monospace", fontWeight: 900, fontSize: 18, color,
+        fontFamily: "'Inter',sans-serif", fontWeight: 900, fontSize: 18, color,
         textShadow: `0 0 10px ${color}55`,
       }}>
         {typeof value === 'number' ? value.toLocaleString() : value}

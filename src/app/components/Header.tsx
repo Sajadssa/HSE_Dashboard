@@ -79,7 +79,7 @@ export function Header() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0 8px', borderBottom: `1px solid ${border}` }}>
         <div style={{ flex: 1 }}>
           <h1 style={{
-            fontFamily: "'Orbitron',monospace", fontWeight: 900,
+            fontFamily: "'Inter',sans-serif", fontWeight: 900,
             fontSize: 'clamp(14px,1.8vw,22px)', letterSpacing: 2,
             background: 'linear-gradient(135deg,#2563eb,#0ea5e9,#10b981)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',

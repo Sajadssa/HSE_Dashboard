@@ -16,7 +16,7 @@ function calculateTrend(current: number, previous: number): { trend: 'up' | 'dow
 }
 
 export function GeneralOverview() {
-  const { metrics: m, monthly, darkMode, snowEffectEnabled } = useDashboard();
+  const { metrics: m, prevMetrics: pm, darkMode, snowEffectEnabled } = useDashboard();
 
   const txt1   = darkMode ? '#e2e8f0' : '#0f1e35';
   const txt2   = darkMode ? '#64748b' : '#4a6080';
@@ -28,19 +28,13 @@ export function GeneralOverview() {
   const barH = (v: number) => Math.min(Math.round((v / MaxBar) * 150), 150);
   const pct  = (v: number) => TP === 0 ? '0.0' : ((v / TP) * 100).toFixed(1);
 
-  // Calculate trends using monthly data
-  const getPrevValue = (key: keyof typeof m, currentVal: number): number => {
-    if (monthly.length < 2) return currentVal;
-    const prev = monthly[monthly.length - 2];
-    return prev[key as keyof typeof prev] as number || currentVal;
-  };
-
-  const opTrend = calculateTrend(m.OP, getPrevValue('OP', m.OP));
-  const spTrend = calculateTrend(m.SP, getPrevValue('SP', m.SP));
-  const cpTrend = calculateTrend(m.CP, getPrevValue('CP', m.CP));
-  const cvTrend = calculateTrend(m.CV, getPrevValue('CV', m.CV));
-  const tpTrend = calculateTrend(TP, m.OP + m.SP + m.CP + m.CV);
-  const tmhTrend = calculateTrend(m.TMH, getPrevValue('TMH', m.TMH));
+  // Calculate trends based on previous period (same length as active date filter)
+  const opTrend  = calculateTrend(m.OP,  pm.OP  ?? 0);
+  const spTrend  = calculateTrend(m.SP,  pm.SP  ?? 0);
+  const cpTrend  = calculateTrend(m.CP,  pm.CP  ?? 0);
+  const cvTrend  = calculateTrend(m.CV,  pm.CV  ?? 0);
+  const tpTrend  = calculateTrend(TP,    (pm.OP ?? 0) + (pm.SP ?? 0) + (pm.CP ?? 0) + (pm.CV ?? 0));
+  const tmhTrend = calculateTrend(m.TMH, pm.TMH ?? 0);
 
   return (
     <div>
@@ -95,17 +89,17 @@ export function GeneralOverview() {
       {/* Charts row */}
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 14, marginBottom: 16 }}>
         {/* Modern Personnel Distribution Donut Chart */}
-        <div style={{ background: cardBg, border: `1px solid ${border}`, borderRadius: 14, overflow: 'hidden', backdropFilter: 'blur(12px)' }}>
+        <div style={{ background: cardBg, border: `1px solid ${border}`, borderRadius: 14, overflow: 'visible', backdropFilter: 'blur(12px)' }}>
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8, padding: '13px 16px',
             borderBottom: `1px solid ${border}`, fontWeight: 700, fontSize: 13, color: txt1,
-            fontFamily: "'Inter',sans-serif",
+            fontFamily: "'Vazirmatn',sans-serif",
           }}>
             <span>👥</span>
             <span>Personnel Distribution — توزیع نیروی انسانی</span>
           </div>
           <div style={{ padding: 16 }}>
-            <ResponsiveContainer width="100%" height={160}>
+            <ResponsiveContainer width="100%" height={220}>
               <PieChart>
                 <Pie
                   data={[
@@ -116,8 +110,8 @@ export function GeneralOverview() {
                   ]}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={90}
+                  innerRadius="45%"
+                  outerRadius="75%"
                   paddingAngle={2}
                   dataKey="value"
                 >
@@ -130,7 +124,7 @@ export function GeneralOverview() {
                 <Legend
                   verticalAlign="bottom"
                   height={36}
-                  wrapperStyle={{ paddingTop: 12, fontFamily: "'Inter',sans-serif" }}
+                  wrapperStyle={{ paddingTop: 12, fontFamily: "'Vazirmatn',sans-serif" }}
                   formatter={(value) => <span style={{ fontSize: 10, color: txt2 }}>{value}</span>}
                 />
               </PieChart>
@@ -149,13 +143,13 @@ export function GeneralOverview() {
                   borderRadius: 8, padding: '8px 10px',
                   textAlign: 'center',
                 }}>
-                  <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, color: txt2, marginBottom: 3 }}>
+                  <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 9, color: txt2, marginBottom: 3 }}>
                     {item.label}
                   </div>
-                  <div style={{ fontFamily: "'Orbitron',monospace", fontWeight: 800, fontSize: 13, color: item.color, marginBottom: 2 }}>
+                  <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontWeight: 800, fontSize: 13, color: item.color, marginBottom: 2 }}>
                     {item.val}
                   </div>
-                  <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 8, color: txt2 }}>
+                  <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 8, color: txt2 }}>
                     {item.pct}%
                   </div>
                 </div>
@@ -169,7 +163,7 @@ export function GeneralOverview() {
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8, padding: '13px 16px',
             borderBottom: `1px solid ${border}`, fontWeight: 700, fontSize: 13, color: txt1,
-            fontFamily: "'Inter',sans-serif",
+            fontFamily: "'Vazirmatn',sans-serif",
           }}>
             <span>🏆</span> LTI Free Status
           </div>
@@ -193,10 +187,10 @@ export function GeneralOverview() {
                 position: 'absolute', top: '50%', left: '50%',
                 transform: 'translate(-50%,-50%)', textAlign: 'center',
               }}>
-                <div style={{ fontFamily: "'Orbitron',monospace", fontSize: 28, fontWeight: 900, color: '#10b981' }}>
+                <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 28, fontWeight: 900, color: '#10b981' }}>
                   {fmt(m.LTID)}
                 </div>
-                <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 8, color: txt2 }}>DAYS</div>
+                <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 8, color: txt2 }}>DAYS</div>
               </div>
             </div>
 
@@ -205,7 +199,7 @@ export function GeneralOverview() {
               background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)',
               borderRadius: 20, padding: '4px 12px', marginBottom: 14,
             }}>
-              <span style={{ fontSize: 10, color: '#10b981', fontWeight: 700, fontFamily: "'Inter',sans-serif" }}>✅ LTI FREE OPERATION</span>
+              <span style={{ fontSize: 10, color: '#10b981', fontWeight: 700, fontFamily: "'Vazirmatn',sans-serif" }}>✅ LTI FREE OPERATION</span>
             </div>
 
             <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 10, color: txt2, lineHeight: 2, textAlign: 'right', direction: 'rtl' }}>
@@ -220,8 +214,8 @@ export function GeneralOverview() {
               border: '1px solid rgba(16,185,129,0.2)',
               borderRadius: 9,
             }}>
-              <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, color: txt2 }}>Cumulative Man-Hours</div>
-              <div style={{ fontFamily: "'Orbitron',monospace", fontSize: 18, fontWeight: 900, color: '#10b981' }}>
+              <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 9, color: txt2 }}>Cumulative Man-Hours</div>
+              <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 18, fontWeight: 900, color: '#10b981' }}>
                 {fmt(m.CombMH)}
               </div>
             </div>
@@ -242,7 +236,7 @@ export function GeneralOverview() {
           <span key={l} style={{
             background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)',
             borderRadius: 20, padding: '2px 10px',
-            fontFamily: "'Inter',sans-serif", fontSize: 9, fontWeight: 600, color: '#60a5fa',
+            fontFamily: "'Vazirmatn',sans-serif", fontSize: 9, fontWeight: 600, color: '#60a5fa',
           }}>{l}</span>
         ))}
         <span style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 9, color: txt2, marginRight: 'auto' }}>

@@ -38,7 +38,7 @@ export function Report() {
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8, padding: '13px 16px',
         borderBottom: `1px solid ${border}`, fontWeight: 700, fontSize: 12, color: txt1,
-        fontFamily: "'Inter',sans-serif",
+        fontFamily: "'Vazirmatn',sans-serif",
       }}>
         {title}
       </div>
@@ -57,7 +57,7 @@ export function Report() {
               background: 'rgba(59,130,246,0.1)', padding: '8px 14px',
               textAlign: 'left', fontWeight: 600, color: '#3b82f6',
               borderBottom: `1px solid ${border}`,
-              fontFamily: "'Inter',sans-serif",
+              fontFamily: "'Vazirmatn',sans-serif",
             }}>{h}</th>
           ))}
         </tr>
@@ -67,8 +67,8 @@ export function Report() {
           <tr key={ri} style={{ background: ri % 2 === 1 ? 'rgba(255,255,255,0.015)' : 'transparent' }}>
             {row.map((cell, ci) => (
               <td key={ci} style={{
-                padding: '8px 14px', borderBottom: `1px solid rgba(255,255,255,0.03)`, color: txt1,
-                fontFamily: ci === 1 || ci === 2 ? "'Orbitron',monospace" : "'Vazirmatn',sans-serif",
+                padding: '8px 14px', borderBottom: `1px solid rgba(255,255,255,0.03)`,
+                fontFamily: ci === 1 || ci === 2 ? "'Vazirmatn',sans-serif" : "'Vazirmatn',sans-serif",
                 fontWeight: ci === 1 || ci === 2 ? 700 : 400,
                 color: ci === 1 || ci === 2 ? '#06b6d4' : txt1,
               }}>
@@ -94,7 +94,7 @@ export function Report() {
         display: 'inline-flex', alignItems: 'center', gap: 3,
         padding: '2px 8px', borderRadius: 20, fontSize: 9, fontWeight: 700,
         background: s.bg, color: s.c, border: `1px solid ${s.brd}`,
-        fontFamily: "'Inter',sans-serif",
+        fontFamily: "'Vazirmatn',sans-serif",
       }}>
         {label}
       </span>
@@ -168,7 +168,7 @@ export function Report() {
                 <Icon size={20} color={link.color} />
               </div>
               <div style={{ flex: 1, position: 'relative', zIndex: 1 }}>
-                <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 13, fontWeight: 700, color: txt1, marginBottom: 4 }}>
+                <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 13, fontWeight: 700, color: txt1, marginBottom: 4 }}>
                   {link.label}
                 </div>
                 <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 10, color: txt2 }}>
@@ -195,7 +195,7 @@ export function Report() {
         background: 'rgba(59,130,246,0.07)', border: '1px solid rgba(59,130,246,0.2)',
         borderRadius: 10, padding: '9px 14px', marginBottom: 20,
         display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center',
-        fontFamily: "'Inter',sans-serif", fontSize: 10, color: txt2,
+        fontFamily: "'Vazirmatn',sans-serif", fontSize: 10, color: txt2,
       }}>
         <span>📅 Report Period: <b style={{ color: '#3b82f6' }}>{fromStr} — {toStr}</b></span>
         <span>📋 Generated: <b style={{ color: '#06b6d4' }}>{todayStr}</b></span>

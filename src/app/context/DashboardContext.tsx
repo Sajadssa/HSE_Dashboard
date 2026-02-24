@@ -60,9 +60,11 @@ export interface MonthlyPoint {
 interface DashboardCtx {
   dateRange: DateRange;
   setDateRange: (r: DateRange) => void;
+  previousRange: DateRange;
   preset: Preset;
   setPreset: (p: Preset) => void;
   metrics: Metrics;
+  prevMetrics: Metrics;
   monthly: MonthlyPoint[];
   darkMode: boolean;
   toggleDarkMode: () => void;
@@ -249,8 +251,23 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     setPreset('custom');
   }, []);
 
+  const previousRange = useMemo<DateRange>(() => {
+    const { start, end } = dateRange;
+    const oneDayMs = 86_400_000;
+    const lengthDays = Math.max(1, Math.round((end.getTime() - start.getTime()) / oneDayMs) + 1);
+    const prevEndTime = start.getTime() - oneDayMs;
+    const rawPrevStartTime = prevEndTime - (lengthDays - 1) * oneDayMs;
+    const minStartTime = DATA_START.getTime();
+    const clampedPrevStartTime = Math.max(rawPrevStartTime, minStartTime);
+    const prevStart = new Date(clampedPrevStartTime);
+    const prevEnd = new Date(prevEndTime);
+    return { start: prevStart, end: prevEnd };
+  }, [dateRange]);
+
   const rows = useMemo(() => filterRows(dateRange.start, dateRange.end), [dateRange]);
+  const prevRows = useMemo(() => filterRows(previousRange.start, previousRange.end), [previousRange]);
   const metrics = useMemo(() => computeMetrics(rows), [rows]);
+  const prevMetrics = useMemo(() => computeMetrics(prevRows), [prevRows]);
   const monthly = useMemo(() => buildMonthly(rows), [rows]);
 
   const toggleDarkMode = useCallback(() => setDarkMode(d => !d), []);
@@ -258,8 +275,22 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const toggleSnowEffect = useCallback(() => setSnowEffectEnabled(e => !e), []);
 
   return (
-    <Ctx.Provider value={{ dateRange, setDateRange, preset, setPreset, metrics, monthly,
-      darkMode, toggleDarkMode, sidebarOpen, toggleSidebar, snowEffectEnabled, toggleSnowEffect }}>
+    <Ctx.Provider value={{
+      dateRange,
+      setDateRange,
+      previousRange,
+      preset,
+      setPreset,
+      metrics,
+      prevMetrics,
+      monthly,
+      darkMode,
+      toggleDarkMode,
+      sidebarOpen,
+      toggleSidebar,
+      snowEffectEnabled,
+      toggleSnowEffect,
+    }}>
       {children}
     </Ctx.Provider>
   );

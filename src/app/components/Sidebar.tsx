@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router';
 import {
   LayoutDashboard, AlertTriangle, Shield, BarChart2,
-  FileText, ChevronLeft, ChevronRight, Factory,
+  FileText, ChevronLeft, ChevronRight, Factory, Info,
 } from 'lucide-react';
 import { useDashboard } from '../context/DashboardContext';
 
@@ -11,6 +11,7 @@ const NAV = [
   { to: '/proactive', icon: Shield,          label: 'Proactive (Leading)',   labelFa: 'شاخص‌های پیشگیرانه' },
   { to: '/analysis',  icon: BarChart2,       label: 'Analysis',              labelFa: 'تحلیل و آنالیز'   },
   { to: '/report',    icon: FileText,        label: 'Report',                labelFa: 'گزارش‌ها'          },
+  { to: '/kpi-definition', icon: Info,       label: 'KPI Definition',        labelFa: 'توضیح شاخص‌ها'    },
 ];
 
 export function Sidebar() {

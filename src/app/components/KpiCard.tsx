@@ -77,7 +77,7 @@ export function KpiCard({ label, labelFa, value, sub, variant = 'blue', icon, da
                 padding: '2px 6px', borderRadius: 6,
                 background: trendBg,
                 color: trendColor,
-                fontFamily: "'Orbitron',monospace",
+                fontFamily: "'Inter',sans-serif",
                 fontSize: 8, fontWeight: 700,
               }}>
                 {trend === 'up' ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
@@ -86,7 +86,7 @@ export function KpiCard({ label, labelFa, value, sub, variant = 'blue', icon, da
             )}
           </div>
           <div style={{
-            fontFamily: "'Orbitron',monospace", fontWeight: 900,
+            fontFamily: "'Inter',sans-serif", fontWeight: 900,
             fontSize: 'clamp(16px,2vw,26px)', color: c.val, lineHeight: 1, marginBottom: 4,
           }}>
             {value}
