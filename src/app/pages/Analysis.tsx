@@ -4,6 +4,7 @@ import {
   PolarAngleAxis, XAxis, YAxis, CartesianGrid, LineChart, Line,
   Tooltip, Legend, ResponsiveContainer, PolarRadiusAxis,
 } from 'recharts';
+import { ChartTooltip } from '../components/ChartTooltip';
 import { useDashboard } from '../context/DashboardContext';
 import { KpiCard } from '../components/KpiCard';
 import { TrendingUp, TrendingDown } from 'lucide-react';
@@ -11,7 +12,7 @@ import { TrendingUp, TrendingDown } from 'lucide-react';
 function fmt(n: number) { return n.toLocaleString(); }
 
 export function Analysis() {
-  const { metrics: m, monthly, darkMode } = useDashboard();
+  const { metrics: m, monthly, darkMode, snowEffectEnabled } = useDashboard();
 
   const txt1   = darkMode ? '#e2e8f0' : '#0f1e35';
   const txt2   = darkMode ? '#64748b' : '#4a6080';
@@ -93,7 +94,7 @@ export function Analysis() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
         {/* Lagging Indicators Trend */}
         <Card title={<><span>📉</span> Lagging Indicators Trend — روند شاخص‌های واکنشی</>}>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={160}>
             <LineChart data={chartData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
               <defs>
                 <linearGradient id="ltiGrad" x1="0" y1="0" x2="0" y2="1">
@@ -104,10 +105,7 @@ export function Analysis() {
               <CartesianGrid strokeDasharray="3 3" stroke={gridC} />
               <XAxis dataKey="month" tick={{ fill: txt2, fontSize: 9 }} tickLine={false} />
               <YAxis tick={{ fill: txt2, fontSize: 9 }} tickLine={false} axisLine={false} />
-              <Tooltip
-                contentStyle={{ background: darkMode ? '#0f1a2e' : '#fff', border: `1px solid ${border}`, borderRadius: 8, fontSize: 10 }}
-                formatter={(v: number) => [fmt(v), '']}
-              />
+              {snowEffectEnabled ? <Tooltip content={<ChartTooltip />} /> : null}
               <Legend wrapperStyle={{ fontSize: 9 }} />
               <Line type="monotone" dataKey="LTI" stroke="#ef4444" strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="LTI" />
               <Line type="monotone" dataKey="MTC" stroke="#f59e0b" strokeWidth={2.5} dot={{ r: 3 }} name="MTC" />
@@ -119,7 +117,7 @@ export function Analysis() {
 
         {/* Leading Indicators Trend */}
         <Card title={<><span>📈</span> Leading Indicators Trend — روند شاخص‌های پیشگیرانه</>}>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={160}>
             <AreaChart data={chartData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
               <defs>
                 <linearGradient id="htrGrad" x1="0" y1="0" x2="0" y2="1">
@@ -134,10 +132,7 @@ export function Analysis() {
               <CartesianGrid strokeDasharray="3 3" stroke={gridC} />
               <XAxis dataKey="month" tick={{ fill: txt2, fontSize: 9 }} tickLine={false} />
               <YAxis tick={{ fill: txt2, fontSize: 9 }} tickLine={false} axisLine={false} />
-              <Tooltip
-                contentStyle={{ background: darkMode ? '#0f1a2e' : '#fff', border: `1px solid ${border}`, borderRadius: 8, fontSize: 10 }}
-                formatter={(v: number) => [fmt(v), '']}
-              />
+              {snowEffectEnabled ? <Tooltip content={<ChartTooltip />} /> : null}
               <Legend wrapperStyle={{ fontSize: 9 }} />
               <Area type="monotone" dataKey="HTR" stroke="#10b981" fill="url(#htrGrad)" strokeWidth={2} dot={{ r: 2 }} name="Training MH" />
               <Area type="monotone" dataKey="SC" stroke="#f59e0b" fill="url(#scGrad)" strokeWidth={2} dot={false} name="Stop Card" />
@@ -150,7 +145,7 @@ export function Analysis() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
         {/* Personnel Trend */}
         <Card title={<><span>👥</span> Personnel Trend — روند نیروی انسانی (میانگین روزانه)</>}>
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={140}>
             <AreaChart data={chartData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
               <defs>
                 <linearGradient id="opGrad" x1="0" y1="0" x2="0" y2="1">
@@ -165,10 +160,7 @@ export function Analysis() {
               <CartesianGrid strokeDasharray="3 3" stroke={gridC} />
               <XAxis dataKey="month" tick={{ fill: txt2, fontSize: 9 }} tickLine={false} />
               <YAxis tick={{ fill: txt2, fontSize: 9 }} tickLine={false} axisLine={false} />
-              <Tooltip
-                contentStyle={{ background: darkMode ? '#0f1a2e' : '#fff', border: `1px solid ${border}`, borderRadius: 8, fontSize: 10 }}
-                formatter={(v: number) => [(v as any).toFixed(0), '']}
-              />
+              {snowEffectEnabled ? <Tooltip content={<ChartTooltip />} /> : null}
               <Legend wrapperStyle={{ fontSize: 9 }} />
               <Area type="monotone" dataKey="OP" stroke="#3b82f6" fill="url(#opGrad)" strokeWidth={2} dot={{ r: 2 }} name="Office" />
               <Area type="monotone" dataKey="SP" stroke="#8b5cf6" fill="url(#spGrad)" strokeWidth={2} dot={false} name="Site" />
@@ -178,15 +170,12 @@ export function Analysis() {
 
         {/* Unsafe Acts/Conditions Trend */}
         <Card title={<><span>⚠️</span> UAC Trend — روند اعمال و شرایط ناایمن</>}>
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={140}>
             <BarChart data={chartData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={gridC} />
               <XAxis dataKey="month" tick={{ fill: txt2, fontSize: 9 }} tickLine={false} />
               <YAxis tick={{ fill: txt2, fontSize: 9 }} tickLine={false} axisLine={false} />
-              <Tooltip
-                contentStyle={{ background: darkMode ? '#0f1a2e' : '#fff', border: `1px solid ${border}`, borderRadius: 8, fontSize: 10 }}
-                formatter={(v: number) => [fmt(v), 'Count']}
-              />
+              {snowEffectEnabled ? <Tooltip content={<ChartTooltip />} /> : null}
               <Legend wrapperStyle={{ fontSize: 9 }} />
               <Bar dataKey="UAC" fill="#ec4899" radius={[4,4,0,0]} />
             </BarChart>
@@ -212,10 +201,7 @@ export function Analysis() {
               <XAxis dataKey="month" tick={{ fill: txt2, fontSize: 9 }} tickLine={false} />
               <YAxis tick={{ fill: txt2, fontSize: 9 }} tickLine={false} axisLine={false}
                 tickFormatter={v => (v/1000).toFixed(0)+'k'} />
-              <Tooltip
-                contentStyle={{ background: darkMode ? '#0f1a2e' : '#fff', border: `1px solid ${border}`, borderRadius: 8, fontSize: 10 }}
-                formatter={(v: number) => [fmt(v), 'Man-Hours']}
-              />
+              {snowEffectEnabled ? <Tooltip content={<ChartTooltip />} /> : null}
               <Area type="monotone" dataKey="TMH" stroke="#3b82f6" fill="url(#mhGrad)" strokeWidth={2} dot={false} />
             </AreaChart>
           </ResponsiveContainer>
@@ -229,10 +215,7 @@ export function Analysis() {
               <PolarAngleAxis dataKey="subject" tick={{ fill: txt2, fontSize: 9 }} />
               <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
               <Radar name="Score" dataKey="A" stroke="#10b981" fill="#10b981" fillOpacity={0.25} />
-              <Tooltip
-                contentStyle={{ background: darkMode ? '#0f1a2e' : '#fff', border: `1px solid ${border}`, borderRadius: 8, fontSize: 10 }}
-                formatter={(v: number) => [`${v.toFixed(1)}`, 'Score']}
-              />
+              {snowEffectEnabled ? <Tooltip content={<ChartTooltip />} /> : null}
             </RadarChart>
           </ResponsiveContainer>
         </Card>
@@ -247,9 +230,7 @@ export function Analysis() {
               <CartesianGrid strokeDasharray="3 3" stroke={gridC} />
               <XAxis dataKey="month" tick={{ fill: txt2, fontSize: 9 }} tickLine={false} />
               <YAxis tick={{ fill: txt2, fontSize: 9 }} tickLine={false} axisLine={false} />
-              <Tooltip
-                contentStyle={{ background: darkMode ? '#0f1a2e' : '#fff', border: `1px solid ${border}`, borderRadius: 8, fontSize: 10 }}
-              />
+              {snowEffectEnabled ? <Tooltip content={<ChartTooltip />} /> : null}
               <Legend wrapperStyle={{ fontSize: 9 }} />
               <Bar dataKey="OP" name="Office"     fill="#3b82f6" radius={[3,3,0,0]} />
               <Bar dataKey="SP" name="Site"       fill="#8b5cf6" radius={[3,3,0,0]} />

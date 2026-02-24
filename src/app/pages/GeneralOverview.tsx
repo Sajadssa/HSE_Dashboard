@@ -2,6 +2,7 @@ import { useDashboard } from '../context/DashboardContext';
 import { KpiCard } from '../components/KpiCard';
 import { Users, Clock, Shield, TrendingUp } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { ChartTooltip } from '../components/ChartTooltip';
 
 function fmt(n: number) { return n.toLocaleString(); }
 
@@ -15,7 +16,7 @@ function calculateTrend(current: number, previous: number): { trend: 'up' | 'dow
 }
 
 export function GeneralOverview() {
-  const { metrics: m, monthly, darkMode } = useDashboard();
+  const { metrics: m, monthly, darkMode, snowEffectEnabled } = useDashboard();
 
   const txt1   = darkMode ? '#e2e8f0' : '#0f1e35';
   const txt2   = darkMode ? '#64748b' : '#4a6080';
@@ -104,7 +105,7 @@ export function GeneralOverview() {
             <span>Personnel Distribution — توزیع نیروی انسانی</span>
           </div>
           <div style={{ padding: 16 }}>
-            <ResponsiveContainer width="100%" height={220}>
+            <ResponsiveContainer width="100%" height={160}>
               <PieChart>
                 <Pie
                   data={[
@@ -125,17 +126,7 @@ export function GeneralOverview() {
                   <Cell fill="#f59e0b" />
                   <Cell fill="#10b981" />
                 </Pie>
-                <Tooltip
-                  contentStyle={{
-                    background: darkMode ? '#0f1a2e' : '#fff',
-                    border: `1px solid ${border}`,
-                    borderRadius: 8,
-                    fontSize: 11,
-                    fontFamily: "'Orbitron',monospace",
-                  }}
-                  formatter={(value: number) => [fmt(value), 'Count']}
-                  labelStyle={{ color: txt1, fontWeight: 700 }}
-                />
+                {snowEffectEnabled ? <Tooltip content={<ChartTooltip />} /> : null}
                 <Legend
                   verticalAlign="bottom"
                   height={36}
