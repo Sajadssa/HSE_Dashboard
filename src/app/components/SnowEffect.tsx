@@ -60,7 +60,7 @@ export function SnowEffect() {
     return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', onResize); };
   }, [isWinter, snowEffectEnabled]);
 
-  if (!isWinter) return null;
+  if (!isWinter || !snowEffectEnabled) return null;
   return (
     <canvas
       ref={canvasRef}

@@ -123,7 +123,7 @@ export function Header() {
             cursor: 'pointer', transition: 'all 0.25s ease',
           }}
         >
-          <div style={{ position: 'relative', width: 96, height: 36, borderRadius: 20, padding: 0, background: 'transparent' }}>
+          <div style={{ position: 'relative', width: 96, height: 36, borderRadius: 20, padding: 4, background: state === 'snow' ? 'linear-gradient(90deg,#2563eb22,#60a5fa22)' : state === 'dark' ? 'linear-gradient(90deg,#111827, #0b1220)' : 'linear-gradient(90deg,#e6f0ff,#eef7ff)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.02)' }}>
             {/* Track labels (visually subtle) */}
             <div style={{ position: 'absolute', left: 8, top: 6, fontSize: 10, color: state === 'light' ? '#0f1e35' : '#94a3b8' }} />
             <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: 6, fontSize: 10, color: state === 'dark' ? '#e2e8f0' : '#94a3b8' }} />
@@ -137,7 +137,7 @@ export function Header() {
               transition: 'left 320ms cubic-bezier(.2,.9,.2,1), background 220ms',
               background: state === 'snow' ? '#dff1ff' : state === 'dark' ? '#11182a' : '#ffffff',
               border: `1px solid ${state === 'snow' ? 'rgba(37,99,235,0.25)' : state === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)'}`,
-              boxShadow: 'none'
+              boxShadow: state === 'dark' ? '0 6px 18px rgba(2,6,23,0.6)' : '0 6px 18px rgba(2,6,23,0.12)'
             }}>
               {state === 'light' && <Sun size={14} />}
               {state === 'dark' && <Moon size={14} />}
