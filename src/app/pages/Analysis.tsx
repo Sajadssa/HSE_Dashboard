@@ -21,7 +21,7 @@ export function Analysis() {
 
   const SectionTitle = ({ children }: { children: ReactNode }) => (
     <div style={{
-      fontFamily: "'Vazirmatn',sans-serif", fontSize: 12, fontWeight: 800,
+      fontFamily: "'Vazir','Vazirmatn',sans-serif", fontSize: 12, fontWeight: 800,
       color: txt1, textTransform: 'uppercase', letterSpacing: '1px',
       marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8,
       background: darkMode ? 'rgba(59,130,246,0.08)' : 'rgba(37,99,235,0.08)',

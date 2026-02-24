@@ -88,7 +88,7 @@ export function Header() {
           }}>
             HSE Dashboard
           </h1>
-          <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 10, color: txt2, marginTop: 2 }}>
+          <div style={{ fontFamily: "'Vazir','Vazirmatn',sans-serif", fontSize: 10, color: txt2, marginTop: 2 }}>
             Sepehr Pasargad E&P — N.I.O.C. &nbsp;|&nbsp; {todayStr}
           </div>
         </div>
@@ -109,54 +109,42 @@ export function Header() {
           </div>
         </div>
 
-        {/* Modern Trend-Style Three-State Toggle (Light → Dark → Snow) */}
-        <button
+        {/* Sliding Three-Position Rail Toggle (Light / Dark / Snow) */}
+        <div
+          role="switch"
+          aria-checked={state !== 'light'}
           onClick={handleThreeStateToggle}
           title={state === 'light' ? 'Switch to Dark' : state === 'dark' ? 'Enable Snow' : 'Switch to Light'}
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: state === 'snow' ? 17 : 15,
-            padding: '8px 10px', borderRadius: 10,
-            background: state === 'light'
-              ? 'linear-gradient(135deg,rgba(37,99,235,0.2),rgba(59,130,246,0.15))'
-              : state === 'dark'
-              ? 'linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))'
-              : 'linear-gradient(135deg,rgba(59,130,246,0.3),rgba(96,165,250,0.2))',
-            border: state === 'light'
-              ? '1px solid rgba(37,99,235,0.3)'
-              : state === 'dark'
-              ? '1px solid rgba(255,255,255,0.12)'
-              : '1px solid rgba(59,130,246,0.4)',
-            color: txt1,
-            cursor: 'pointer',
-            transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
-            backdropFilter: 'blur(8px)',
-            minWidth: '36px',
-            minHeight: '36px',
-          }}
-          onMouseEnter={e => {
-            const el = e.currentTarget as HTMLButtonElement;
-            el.style.transform = 'scale(1.12) rotate(20deg)';
-            el.style.background = state === 'light'
-              ? 'linear-gradient(135deg,rgba(37,99,235,0.35),rgba(59,130,246,0.25))'
-              : state === 'dark'
-              ? 'linear-gradient(135deg,rgba(255,255,255,0.15),rgba(255,255,255,0.08))'
-              : 'linear-gradient(135deg,rgba(59,130,246,0.4),rgba(96,165,250,0.3))';
-          }}
-          onMouseLeave={e => {
-            const el = e.currentTarget as HTMLButtonElement;
-            el.style.transform = 'scale(1) rotate(0deg)';
-            el.style.background = state === 'light'
-              ? 'linear-gradient(135deg,rgba(37,99,235,0.2),rgba(59,130,246,0.15))'
-              : state === 'dark'
-              ? 'linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))'
-              : 'linear-gradient(135deg,rgba(59,130,246,0.3),rgba(96,165,250,0.2))';
+            padding: '6px', borderRadius: 12,
+            background: darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.04)',
+            border: `1px solid ${darkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)'}`,
+            cursor: 'pointer', transition: 'all 0.25s ease',
           }}
         >
-          {state === 'light' && <Sun size={16} strokeWidth={2.5} />}
-          {state === 'dark' && <Moon size={16} strokeWidth={2.5} />}
-          {state === 'snow' && <span>❄️</span>}
-        </button>
+          <div style={{ position: 'relative', width: 96, height: 36, borderRadius: 20, padding: 4, background: state === 'snow' ? 'linear-gradient(90deg,#2563eb22,#60a5fa22)' : state === 'dark' ? 'linear-gradient(90deg,#111827, #0b1220)' : 'linear-gradient(90deg,#e6f0ff,#eef7ff)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.02)' }}>
+            {/* Track labels (visually subtle) */}
+            <div style={{ position: 'absolute', left: 8, top: 6, fontSize: 10, color: state === 'light' ? '#0f1e35' : '#94a3b8' }}> </div>
+            <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: 6, fontSize: 10, color: state === 'dark' ? '#e2e8f0' : '#94a3b8' }}> </div>
+            <div style={{ position: 'absolute', right: 8, top: 6, fontSize: 10, color: state === 'snow' ? '#e2e8f0' : '#94a3b8' }}> </div>
+
+            {/* Knob */}
+            <div style={{
+              position: 'absolute', top: 4, left: state === 'light' ? 6 : state === 'dark' ? 'calc(50% - 16px)' : 62,
+              width: 28, height: 28, borderRadius: 14,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'left 320ms cubic-bezier(.2,.9,.2,1), background 220ms',
+              background: state === 'snow' ? '#dff1ff' : state === 'dark' ? '#11182a' : '#ffffff',
+              border: `1px solid ${state === 'snow' ? 'rgba(37,99,235,0.25)' : state === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)'}`,
+              boxShadow: state === 'dark' ? '0 6px 18px rgba(2,6,23,0.6)' : '0 6px 18px rgba(2,6,23,0.12)'
+            }}>
+              {state === 'light' && <Sun size={14} />}
+              {state === 'dark' && <Moon size={14} />}
+              {state === 'snow' && <span style={{ fontSize: 14 }}>❄️</span>}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Date filter row */}

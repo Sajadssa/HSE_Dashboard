@@ -45,7 +45,7 @@ export function GeneralOverview() {
     <div>
       {/* Section title */}
       <div style={{
-        fontFamily: "'Vazirmatn',sans-serif", fontSize: 11, fontWeight: 700,
+        fontFamily: "'Vazir','Vazirmatn',sans-serif", fontSize: 11, fontWeight: 700,
         color: txt2, textTransform: 'uppercase', letterSpacing: '0.8px',
         marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8,
       }}>

@@ -55,10 +55,10 @@ export function Sidebar() {
         </div>
         {sidebarOpen && (
           <div style={{ overflow: 'hidden' }}>
-            <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontWeight: 700, fontSize: 12, color: txtMain, whiteSpace: 'nowrap' }}>
+            <div style={{ fontFamily: "'Vazir','Vazirmatn',sans-serif", fontWeight: 700, fontSize: 12, color: txtMain, whiteSpace: 'nowrap' }}>
               Sepehr Pasargad
             </div>
-            <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 9, color: txtMute, whiteSpace: 'nowrap' }}>
+            <div style={{ fontFamily: "'Vazir','Vazirmatn',sans-serif", fontSize: 9, color: txtMute, whiteSpace: 'nowrap' }}>
               Oil &amp; Gas Production
             </div>
           </div>

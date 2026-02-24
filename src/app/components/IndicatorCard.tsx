@@ -43,7 +43,7 @@ export function IndicatorCard({ icon, label, value, status = 'zero', dark = true
     >
       <div style={{ fontSize: 20, marginBottom: 5 }}>{icon}</div>
       <div style={{
-        fontFamily: "'Vazirmatn',sans-serif", fontSize: 9, color: txt2,
+        fontFamily: "'Vazir','Vazirmatn',sans-serif", fontSize: 9, color: txt2,
         marginBottom: 5, fontWeight: 500, lineHeight: 1.3,
       }}>
         {label}

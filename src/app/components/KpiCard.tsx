@@ -64,7 +64,7 @@ export function KpiCard({ label, labelFa, value, sub, variant = 'blue', icon, da
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
         <div style={{ flex: 1 }}>
           <div style={{
-            fontFamily: "'Vazirmatn',sans-serif", fontSize: 10, color: txt2, fontWeight: 500,
+            fontFamily: "'Vazir','Vazirmatn',sans-serif", fontSize: 10, color: txt2, fontWeight: 500,
             marginBottom: 8, lineHeight: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
             <div>
