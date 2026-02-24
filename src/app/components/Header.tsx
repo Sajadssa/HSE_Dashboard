@@ -18,10 +18,34 @@ function toInputVal(d: Date) {
 }
 
 export function Header() {
-  const { darkMode, toggleDarkMode, preset, setPreset, dateRange, setDateRange } = useDashboard();
+  const { darkMode, toggleDarkMode, preset, setPreset, dateRange, setDateRange, snowEffectEnabled, toggleSnowEffect } = useDashboard();
   const [showCustom, setShowCustom] = useState(false);
   const [cStart, setCStart] = useState(toInputVal(DATA_START));
   const [cEnd,   setCEnd]   = useState(toInputVal(DATA_END));
+
+  // Three-state toggle: Light -> Dark -> Snow -> Light
+  const handleThreeStateToggle = () => {
+    if (snowEffectEnabled) {
+      // Snow → Light: disable snow and light mode
+      toggleSnowEffect();
+      if (darkMode) toggleDarkMode();
+    } else if (darkMode) {
+      // Dark → Snow: enable snow
+      toggleSnowEffect();
+    } else {
+      // Light → Dark: enable dark mode
+      toggleDarkMode();
+    }
+  };
+
+  // Determine current state
+  const getToggleState = () => {
+    if (snowEffectEnabled) return 'snow';
+    if (darkMode) return 'dark';
+    return 'light';
+  };
+
+  const state = getToggleState();
 
   const today = new Date(2026, 1, 24);
   const todayStr = today.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
@@ -46,7 +70,7 @@ export function Header() {
   return (
     <header style={{
       background: bg,
-      borderBottom: `1px solid ${border}`,
+      borderBottom: `2px solid ${darkMode ? 'rgba(59,130,246,0.3)' : 'rgba(37,99,235,0.3)'}`,
       backdropFilter: 'blur(24px) saturate(180%)',
       padding: '0 20px',
       position: 'sticky', top: 0, zIndex: 200,
@@ -57,9 +81,10 @@ export function Header() {
           <h1 style={{
             fontFamily: "'Orbitron',monospace", fontWeight: 900,
             fontSize: 'clamp(14px,1.8vw,22px)', letterSpacing: 2,
-            background: 'linear-gradient(135deg,#3b82f6,#06b6d4,#10b981)',
+            background: 'linear-gradient(135deg,#2563eb,#0ea5e9,#10b981)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             margin: 0,
+            textShadow: 'none',
           }}>
             HSE Dashboard
           </h1>
@@ -68,53 +93,101 @@ export function Header() {
           </div>
         </div>
 
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          background: 'rgba(16,185,129,0.1)',
-          border: '1px solid rgba(16,185,129,0.25)',
-          borderRadius: 8, padding: '4px 10px',
-        }}>
-          <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }} />
-          <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, color: '#10b981', fontWeight: 600 }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          {/* LTI Free */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            background: 'rgba(16,185,129,0.15)',
+            border: '1px solid rgba(16,185,129,0.4)',
+            borderRadius: 10, padding: '6px 12px',
+            boxShadow: '0 0 12px rgba(16,185,129,0.25)',
+          }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 10px #10b981' }} />
+            <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 11, color: '#10b981', fontWeight: 700 }}>
             LTI FREE
           </span>
+          </div>
         </div>
 
+        {/* Modern Trend-Style Three-State Toggle (Light → Dark → Snow) */}
         <button
-          onClick={toggleDarkMode}
+          onClick={handleThreeStateToggle}
+          title={state === 'light' ? 'Switch to Dark' : state === 'dark' ? 'Enable Snow' : 'Switch to Light'}
           style={{
-            background: darkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)',
-            border: `1px solid ${border}`,
-            borderRadius: 9, padding: '7px 10px',
-            color: txt1, cursor: 'pointer', transition: 'all 0.2s',
-            display: 'flex', alignItems: 'center', gap: 5,
-            fontFamily: "'Inter',sans-serif", fontSize: 11,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: state === 'snow' ? 17 : 15,
+            padding: '8px 10px', borderRadius: 10,
+            background: state === 'light'
+              ? 'linear-gradient(135deg,rgba(37,99,235,0.2),rgba(59,130,246,0.15))'
+              : state === 'dark'
+              ? 'linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))'
+              : 'linear-gradient(135deg,rgba(59,130,246,0.3),rgba(96,165,250,0.2))',
+            border: state === 'light'
+              ? '1px solid rgba(37,99,235,0.3)'
+              : state === 'dark'
+              ? '1px solid rgba(255,255,255,0.12)'
+              : '1px solid rgba(59,130,246,0.4)',
+            color: txt1,
+            cursor: 'pointer',
+            transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            backdropFilter: 'blur(8px)',
+            minWidth: '36px',
+            minHeight: '36px',
+          }}
+          onMouseEnter={e => {
+            const el = e.currentTarget as HTMLButtonElement;
+            el.style.transform = 'scale(1.12) rotate(20deg)';
+            el.style.background = state === 'light'
+              ? 'linear-gradient(135deg,rgba(37,99,235,0.35),rgba(59,130,246,0.25))'
+              : state === 'dark'
+              ? 'linear-gradient(135deg,rgba(255,255,255,0.15),rgba(255,255,255,0.08))'
+              : 'linear-gradient(135deg,rgba(59,130,246,0.4),rgba(96,165,250,0.3))';
+          }}
+          onMouseLeave={e => {
+            const el = e.currentTarget as HTMLButtonElement;
+            el.style.transform = 'scale(1) rotate(0deg)';
+            el.style.background = state === 'light'
+              ? 'linear-gradient(135deg,rgba(37,99,235,0.2),rgba(59,130,246,0.15))'
+              : state === 'dark'
+              ? 'linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))'
+              : 'linear-gradient(135deg,rgba(59,130,246,0.3),rgba(96,165,250,0.2))';
           }}
         >
-          {darkMode ? <Sun size={14} /> : <Moon size={14} />}
-          <span>{darkMode ? 'Light' : 'Dark'}</span>
+          {state === 'light' && <Sun size={16} strokeWidth={2.5} />}
+          {state === 'dark' && <Moon size={16} strokeWidth={2.5} />}
+          {state === 'snow' && <span>❄️</span>}
         </button>
       </div>
 
       {/* Date filter row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginLeft: 2 }}>
-          <CalendarRange size={14} color={txt2} />
-          <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, color: txt2, fontWeight: 600 }}>
-            Filter:
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <CalendarRange size={15} color={darkMode ? '#3b82f6' : '#2563eb'} />
+          <span style={{ fontFamily: "'Inter',sans-serif", fontSize: 11, color: darkMode ? '#3b82f6' : '#2563eb', fontWeight: 700 }}>
+            Date Filter:
           </span>
         </div>
 
-        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {PRESETS.map(p => (
             <button
               key={p.key}
               onClick={() => { setPreset(p.key); setShowCustom(false); }}
               style={{
-                padding: '4px 12px', borderRadius: 20, cursor: 'pointer',
-                fontFamily: "'Inter',sans-serif", fontSize: 10, fontWeight: 600,
-                transition: 'all 0.2s',
+                padding: '6px 14px', borderRadius: 22, cursor: 'pointer',
+                fontFamily: "'Inter',sans-serif", fontSize: 11, fontWeight: 600,
+                transition: 'all 0.3s',
                 ...(preset === p.key ? activePresetStyle : inactivePresetStyle(darkMode)),
+              }}
+              onMouseEnter={e => {
+                if (preset !== p.key) {
+                  const el = e.currentTarget as HTMLButtonElement;
+                  el.style.transform = 'translateY(-1px)';
+                }
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget as HTMLButtonElement;
+                el.style.transform = 'translateY(0)';
               }}
             >
               {p.label}
@@ -123,63 +196,110 @@ export function Header() {
           <button
             onClick={() => setShowCustom(v => !v)}
             style={{
-              padding: '4px 12px', borderRadius: 20, cursor: 'pointer',
-              fontFamily: "'Inter',sans-serif", fontSize: 10, fontWeight: 600,
-              transition: 'all 0.2s',
+              padding: '6px 14px', borderRadius: 22, cursor: 'pointer',
+              fontFamily: "'Inter',sans-serif", fontSize: 11, fontWeight: 600,
+              transition: 'all 0.3s',
               ...(preset === 'custom' ? activePresetStyle : inactivePresetStyle(darkMode)),
             }}
+            onMouseEnter={e => {
+              if (preset !== 'custom') {
+                const el = e.currentTarget as HTMLButtonElement;
+                el.style.transform = 'translateY(-1px)';
+              }
+            }}
+            onMouseLeave={e => {
+              const el = e.currentTarget as HTMLButtonElement;
+              el.style.transform = 'translateY(0)';
+            }}
           >
-            Custom Range
+            📅 Custom
           </button>
         </div>
 
         {/* Active range display */}
-        <div style={{ marginRight: 'auto', fontFamily: "'Inter',sans-serif", fontSize: 10, color: txt2 }}>
-          {new Date(dateRange.start).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}
-          {' – '}
-          {new Date(dateRange.end).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}
+        <div style={{
+          marginLeft: 'auto',
+          fontFamily: "'Orbitron',monospace",
+          fontSize: 11,
+          color: darkMode ? '#06b6d4' : '#0ea5e9',
+          fontWeight: 600,
+          background: darkMode ? 'rgba(6,182,212,0.1)' : 'rgba(14,165,233,0.15)',
+          padding: '4px 10px',
+          borderRadius: 8,
+          border: `1px solid ${darkMode ? 'rgba(6,182,212,0.3)' : 'rgba(14,165,233,0.4)'}`,
+        }}>
+          {new Date(dateRange.start).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})} – {new Date(dateRange.end).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}
         </div>
 
         {showCustom && (
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-            <input
-              type="date" value={cStart}
-              min={toInputVal(DATA_START)} max={toInputVal(DATA_END)}
-              onChange={e => setCStart(e.target.value)}
-              style={{
-                padding: '4px 8px', borderRadius: 7, border: `1px solid ${border}`,
-                background: darkMode ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)',
-                color: txt1, fontSize: 11, fontFamily: "'Inter',sans-serif",
-                outline: 'none', cursor: 'pointer',
-              }}
-            />
-            <span style={{ color: txt2, fontSize: 10 }}>to</span>
-            <input
-              type="date" value={cEnd}
-              min={toInputVal(DATA_START)} max={toInputVal(DATA_END)}
-              onChange={e => setCEnd(e.target.value)}
-              style={{
-                padding: '4px 8px', borderRadius: 7, border: `1px solid ${border}`,
-                background: darkMode ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)',
-                color: txt1, fontSize: 11, fontFamily: "'Inter',sans-serif",
-                outline: 'none', cursor: 'pointer',
-              }}
-            />
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', width: '100%' }}>
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              <input
+                type="date" value={cStart}
+                min={toInputVal(DATA_START)} max={toInputVal(DATA_END)}
+                onChange={e => setCStart(e.target.value)}
+                style={{
+                  padding: '6px 10px', borderRadius: 8, border: `1.5px solid ${darkMode ? 'rgba(59,130,246,0.5)' : 'rgba(37,99,235,0.5)'}`,
+                  background: darkMode ? 'rgba(59,130,246,0.08)' : 'rgba(37,99,235,0.08)',
+                  color: txt1, fontSize: 12, fontFamily: "'Orbitron',monospace", fontWeight: 600,
+                  outline: 'none', cursor: 'pointer', transition: 'all 0.2s',
+                }}
+                onFocus={e => {
+                  (e.currentTarget as HTMLInputElement).style.borderColor = darkMode ? 'rgba(59,130,246,0.8)' : 'rgba(37,99,235,0.8)';
+                  (e.currentTarget as HTMLInputElement).style.boxShadow = darkMode ? '0 0 8px rgba(59,130,246,0.3)' : '0 0 8px rgba(37,99,235,0.3)';
+                }}
+                onBlur={e => {
+                  (e.currentTarget as HTMLInputElement).style.boxShadow = 'none';
+                }}
+              />
+              <span style={{ color: txt2, fontSize: 11, fontWeight: 600 }}>until</span>
+              <input
+                type="date" value={cEnd}
+                min={toInputVal(DATA_START)} max={toInputVal(DATA_END)}
+                onChange={e => setCEnd(e.target.value)}
+                style={{
+                  padding: '6px 10px', borderRadius: 8, border: `1.5px solid ${darkMode ? 'rgba(59,130,246,0.5)' : 'rgba(37,99,235,0.5)'}`,
+                  background: darkMode ? 'rgba(59,130,246,0.08)' : 'rgba(37,99,235,0.08)',
+                  color: txt1, fontSize: 12, fontFamily: "'Orbitron',monospace", fontWeight: 600,
+                  outline: 'none', cursor: 'pointer', transition: 'all 0.2s',
+                }}
+                onFocus={e => {
+                  (e.currentTarget as HTMLInputElement).style.borderColor = darkMode ? 'rgba(59,130,246,0.8)' : 'rgba(37,99,235,0.8)';
+                  (e.currentTarget as HTMLInputElement).style.boxShadow = darkMode ? '0 0 8px rgba(59,130,246,0.3)' : '0 0 8px rgba(37,99,235,0.3)';
+                }}
+                onBlur={e => {
+                  (e.currentTarget as HTMLInputElement).style.boxShadow = 'none';
+                }}
+              />
+            </div>
             <button
               onClick={() => {
                 if (cStart && cEnd) {
                   setDateRange({ start: new Date(cStart), end: new Date(cEnd) });
                   setShowCustom(false);
+                  setPreset('custom');
                 }
               }}
               style={{
-                padding: '4px 14px', borderRadius: 7,
+                padding: '6px 16px', borderRadius: 8,
                 background: 'linear-gradient(135deg,#2563eb,#0ea5e9)',
-                border: 'none', color: '#fff', fontSize: 10, fontWeight: 700,
+                border: 'none', color: '#fff', fontSize: 11, fontWeight: 700,
                 cursor: 'pointer', fontFamily: "'Inter',sans-serif",
+                transition: 'all 0.3s',
+                boxShadow: '0 2px 8px rgba(37,99,235,0.4)',
+              }}
+              onMouseEnter={e => {
+                const el = e.currentTarget as HTMLButtonElement;
+                el.style.transform = 'translateY(-2px)';
+                el.style.boxShadow = '0 4px 16px rgba(37,99,235,0.6)';
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget as HTMLButtonElement;
+                el.style.transform = 'translateY(0)';
+                el.style.boxShadow = '0 2px 8px rgba(37,99,235,0.4)';
               }}
             >
-              Apply
+              ✓ Apply
             </button>
           </div>
         )}

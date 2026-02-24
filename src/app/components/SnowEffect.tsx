@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useDashboard } from '../context/DashboardContext';
 
 interface Flake {
   x: number; y: number; r: number; speed: number; wind: number; opacity: number;
@@ -6,13 +7,14 @@ interface Flake {
 
 export function SnowEffect() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { snowEffectEnabled } = useDashboard();
 
   // Only render in winter: Dec (11), Jan (0), Feb (1)
   const month = new Date().getMonth();
   const isWinter = month === 11 || month === 0 || month === 1;
 
   useEffect(() => {
-    if (!isWinter) return;
+    if (!isWinter || !snowEffectEnabled) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -56,7 +58,7 @@ export function SnowEffect() {
     draw();
 
     return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', onResize); };
-  }, [isWinter]);
+  }, [isWinter, snowEffectEnabled]);
 
   if (!isWinter) return null;
   return (

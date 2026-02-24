@@ -68,6 +68,8 @@ interface DashboardCtx {
   toggleDarkMode: () => void;
   sidebarOpen: boolean;
   toggleSidebar: () => void;
+  snowEffectEnabled: boolean;
+  toggleSnowEffect: () => void;
 }
 
 const Ctx = createContext<DashboardCtx | null>(null);
@@ -217,6 +219,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const [customRange, setCustomRange] = useState<DateRange>({ start: DATA_START, end: DATA_END });
   const [darkMode, setDarkMode] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [snowEffectEnabled, setSnowEffectEnabled] = useState(false);
 
   const dateRange = useMemo<DateRange>(() => {
     const now = DATA_END;
@@ -252,10 +255,11 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
   const toggleDarkMode = useCallback(() => setDarkMode(d => !d), []);
   const toggleSidebar  = useCallback(() => setSidebarOpen(o => !o), []);
+  const toggleSnowEffect = useCallback(() => setSnowEffectEnabled(e => !e), []);
 
   return (
     <Ctx.Provider value={{ dateRange, setDateRange, preset, setPreset, metrics, monthly,
-      darkMode, toggleDarkMode, sidebarOpen, toggleSidebar }}>
+      darkMode, toggleDarkMode, sidebarOpen, toggleSidebar, snowEffectEnabled, toggleSnowEffect }}>
       {children}
     </Ctx.Provider>
   );

@@ -6,8 +6,18 @@ import { IndicatorCard } from '../components/IndicatorCard';
 function fmt(n: number) { return n.toLocaleString(); }
 function fmtR(s: string) { return s; }
 
+function calculateTrend(current: number, previous: number): { trend: 'up' | 'down' | 'neutral'; percent: number } {
+  if (previous === 0 && current === 0) return { trend: 'neutral', percent: 0 };
+  if (previous === 0) return { trend: 'up', percent: 100 };
+  const change = ((current - previous) / previous) * 100;
+  return {
+    trend: change > 5 ? 'up' : change < -5 ? 'down' : 'neutral',
+    percent: change,
+  };
+}
+
 export function ReactiveIndicators() {
-  const { metrics: m, darkMode } = useDashboard();
+  const { metrics: m, monthly, darkMode } = useDashboard();
 
   const txt1   = darkMode ? '#e2e8f0' : '#0f1e35';
   const txt2   = darkMode ? '#64748b' : '#4a6080';
@@ -114,12 +124,18 @@ export function ReactiveIndicators() {
       <SectionTitle>📦 Cumulative Totals — مجموع تجمعی (شامل داده تاریخی)</SectionTitle>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(130px,1fr))', gap: 10 }}>
-        <KpiCard label="LTI (Cumulative)" value={fmt(m.CombLTI)} sub="incl. historical" variant="blue" dark={darkMode} />
-        <KpiCard label="FAC (Cumulative)" value={fmt(m.CombFAC)} sub="incl. historical" variant="orange" dark={darkMode} />
-        <KpiCard label="MTC (Cumulative)" value={fmt(m.CombMTC)} sub="incl. historical" variant="purple" dark={darkMode} />
-        <KpiCard label="Near Miss (Cumul.)" value={fmt(m.CombNM)} sub="incl. historical" variant="cyan" dark={darkMode} />
-        <KpiCard label="LTI Free Days" value={fmt(m.LTID)} sub="Since Sep 23, 2023" variant="green" dark={darkMode} />
-        <KpiCard label="Man-Hours (Cumul.)" value={fmt(m.CombMH)} sub="cumulative" variant="blue" dark={darkMode} />
+        <KpiCard label="LTI (Cumulative)" value={fmt(m.CombLTI)} sub="incl. historical" variant="blue" dark={darkMode}
+          trend={m.CombLTI === 0 ? 'down' : 'neutral'} />
+        <KpiCard label="FAC (Cumulative)" value={fmt(m.CombFAC)} sub="incl. historical" variant="orange" dark={darkMode}
+          trend={m.CombFAC === 0 ? 'down' : 'neutral'} />
+        <KpiCard label="MTC (Cumulative)" value={fmt(m.CombMTC)} sub="incl. historical" variant="purple" dark={darkMode}
+          trend={m.CombMTC === 0 ? 'down' : 'neutral'} />
+        <KpiCard label="Near Miss (Cumul.)" value={fmt(m.CombNM)} sub="incl. historical" variant="cyan" dark={darkMode}
+          trend={calculateTrend(m.NM, m.CombNM > 0 ? m.CombNM / 12 : 0).trend} />
+        <KpiCard label="LTI Free Days" value={fmt(m.LTID)} sub="Since Sep 23, 2023" variant="green" dark={darkMode}
+          trend="up" />
+        <KpiCard label="Man-Hours (Cumul.)" value={fmt(m.CombMH)} sub="cumulative" variant="blue" dark={darkMode}
+          trend="up" />
       </div>
     </div>
   );

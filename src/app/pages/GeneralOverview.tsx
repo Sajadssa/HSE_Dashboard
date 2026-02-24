@@ -1,11 +1,21 @@
 import { useDashboard } from '../context/DashboardContext';
 import { KpiCard } from '../components/KpiCard';
 import { Users, Clock, Shield, TrendingUp } from 'lucide-react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 
 function fmt(n: number) { return n.toLocaleString(); }
 
+function calculateTrend(current: number, previous: number): { trend: 'up' | 'down' | 'neutral'; percent: number } {
+  if (previous === 0) return { trend: 'neutral', percent: 0 };
+  const change = ((current - previous) / previous) * 100;
+  return {
+    trend: change > 0.5 ? 'up' : change < -0.5 ? 'down' : 'neutral',
+    percent: change,
+  };
+}
+
 export function GeneralOverview() {
-  const { metrics: m, darkMode } = useDashboard();
+  const { metrics: m, monthly, darkMode } = useDashboard();
 
   const txt1   = darkMode ? '#e2e8f0' : '#0f1e35';
   const txt2   = darkMode ? '#64748b' : '#4a6080';
@@ -16,6 +26,20 @@ export function GeneralOverview() {
   const MaxBar = Math.max(m.OP, m.SP, m.CP, m.CV === 0 ? 1 : m.CV, 1);
   const barH = (v: number) => Math.min(Math.round((v / MaxBar) * 150), 150);
   const pct  = (v: number) => TP === 0 ? '0.0' : ((v / TP) * 100).toFixed(1);
+
+  // Calculate trends using monthly data
+  const getPrevValue = (key: keyof typeof m, currentVal: number): number => {
+    if (monthly.length < 2) return currentVal;
+    const prev = monthly[monthly.length - 2];
+    return prev[key as keyof typeof prev] as number || currentVal;
+  };
+
+  const opTrend = calculateTrend(m.OP, getPrevValue('OP', m.OP));
+  const spTrend = calculateTrend(m.SP, getPrevValue('SP', m.SP));
+  const cpTrend = calculateTrend(m.CP, getPrevValue('CP', m.CP));
+  const cvTrend = calculateTrend(m.CV, getPrevValue('CV', m.CV));
+  const tpTrend = calculateTrend(TP, m.OP + m.SP + m.CP + m.CV);
+  const tmhTrend = calculateTrend(m.TMH, getPrevValue('TMH', m.TMH));
 
   return (
     <div>
@@ -29,39 +53,47 @@ export function GeneralOverview() {
         <div style={{ flex: 1, height: 1, background: border }} />
       </div>
 
-      {/* KPI row */}
+      {/* KPI row with trends */}
       <div style={{
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(130px,1fr))', gap: 10, marginBottom: 16,
       }}>
         <KpiCard label="Office Personnel" labelFa="کارکنان اداری"
           value={fmt(m.OP)} sub="Personnel" variant="blue" dark={darkMode}
-          icon={<Users size={22}/>} tooltip="تعداد کارکنان اداری" />
+          icon={<Users size={22}/>} tooltip="تعداد کارکنان اداری"
+          trend={opTrend.trend} trendPercent={opTrend.percent} />
         <KpiCard label="Site Personnel" labelFa="کارکنان سایت"
           value={fmt(m.SP)} sub="Personnel" variant="cyan" dark={darkMode}
-          icon={<Users size={22}/>} tooltip="تعداد کارکنان سایت" />
+          icon={<Users size={22}/>} tooltip="تعداد کارکنان سایت"
+          trend={spTrend.trend} trendPercent={spTrend.percent} />
         <KpiCard label="Contractor" labelFa="کارکنان پیمانکار"
           value={fmt(m.CP)} sub="Personnel" variant="purple" dark={darkMode}
-          icon={<Users size={22}/>} tooltip="کارکنان پیمانکاران" />
+          icon={<Users size={22}/>} tooltip="کارکنان پیمانکاران"
+          trend={cpTrend.trend} trendPercent={cpTrend.percent} />
         <KpiCard label="Client / Visitor" labelFa="بازدیدکننده/کارفرما"
           value={fmt(m.CV)} sub="Personnel" variant="orange" dark={darkMode}
-          icon={<Users size={22}/>} tooltip="بازدیدکنندگان و کارفرما" />
+          icon={<Users size={22}/>} tooltip="بازدیدکنندگان و کارفرما"
+          trend={cvTrend.trend} trendPercent={cvTrend.percent} />
         <KpiCard label="Total Personnel" labelFa="کل نیروی انسانی"
           value={fmt(TP)} sub="Total" variant="green" dark={darkMode}
-          icon={<TrendingUp size={22}/>} tooltip="مجموع کل نیروی انسانی" />
+          icon={<TrendingUp size={22}/>} tooltip="مجموع کل نیروی انسانی"
+          trend={tpTrend.trend} trendPercent={tpTrend.percent} />
         <KpiCard label="Total Man-Hours" labelFa="نفر-ساعت کاری"
           value={fmt(m.TMH)} sub="Man-Hours (Period)" variant="blue" dark={darkMode}
-          icon={<Clock size={22}/>} tooltip="مجموع نفر-ساعت دوره انتخابی" />
+          icon={<Clock size={22}/>} tooltip="مجموع نفر-ساعت دوره انتخابی"
+          trend={tmhTrend.trend} trendPercent={tmhTrend.percent} />
         <KpiCard label="LTI Free Days" labelFa="روزهای بدون LTI"
           value={fmt(m.LTID)} sub="Since Sep 23, 2023" variant="green" dark={darkMode}
-          icon={<Shield size={22}/>} tooltip="روزهای بدون حادثه LTI" />
+          icon={<Shield size={22}/>} tooltip="روزهای بدون حادثه LTI"
+          trend="up" />
         <KpiCard label="LTI Free MH (Cum.)" labelFa="نفر-ساعت بدون LTI"
           value={fmt(m.CombMH)} sub="Cumulative" variant="cyan" dark={darkMode}
-          icon={<Clock size={22}/>} tooltip="کل نفر-ساعت بدون LTI (تجمعی)" />
+          icon={<Clock size={22}/>} tooltip="کل نفر-ساعت بدون LTI (تجمعی)"
+          trend="up" />
       </div>
 
       {/* Charts row */}
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 14, marginBottom: 16 }}>
-        {/* Bar chart */}
+        {/* Modern Personnel Distribution Donut Chart */}
         <div style={{ background: cardBg, border: `1px solid ${border}`, borderRadius: 14, overflow: 'hidden', backdropFilter: 'blur(12px)' }}>
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8, padding: '13px 16px',
@@ -72,36 +104,70 @@ export function GeneralOverview() {
             <span>Personnel Distribution — توزیع نیروی انسانی</span>
           </div>
           <div style={{ padding: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14, height: 200, position: 'relative', paddingBottom: 40 }}>
-              <div style={{ position: 'absolute', bottom: 34, left: 0, right: 0, height: 1, background: border }} />
+            <ResponsiveContainer width="100%" height={220}>
+              <PieChart>
+                <Pie
+                  data={[
+                    { name: 'Office', value: m.OP, fill: '#3b82f6' },
+                    { name: 'Site', value: m.SP, fill: '#8b5cf6' },
+                    { name: 'Contractor', value: m.CP, fill: '#f59e0b' },
+                    { name: 'Client/Visitor', value: m.CV, fill: '#10b981' },
+                  ]}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={90}
+                  paddingAngle={2}
+                  dataKey="value"
+                >
+                  <Cell fill="#3b82f6" />
+                  <Cell fill="#8b5cf6" />
+                  <Cell fill="#f59e0b" />
+                  <Cell fill="#10b981" />
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    background: darkMode ? '#0f1a2e' : '#fff',
+                    border: `1px solid ${border}`,
+                    borderRadius: 8,
+                    fontSize: 11,
+                    fontFamily: "'Orbitron',monospace",
+                  }}
+                  formatter={(value: number) => [fmt(value), 'Count']}
+                  labelStyle={{ color: txt1, fontWeight: 700 }}
+                />
+                <Legend
+                  verticalAlign="bottom"
+                  height={36}
+                  wrapperStyle={{ paddingTop: 12, fontFamily: "'Inter',sans-serif" }}
+                  formatter={(value) => <span style={{ fontSize: 10, color: txt2 }}>{value}</span>}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+            {/* Summary below chart */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 8, marginTop: 8 }}>
               {[
-                { label: 'Office', pct: pct(m.OP), val: fmt(m.OP), color: 'linear-gradient(180deg,#3b82f6,#06b6d4)', h: barH(m.OP), tcolor: '#60a5fa' },
-                { label: 'Site', pct: pct(m.SP), val: fmt(m.SP), color: 'linear-gradient(180deg,#8b5cf6,#ec4899)', h: barH(m.SP), tcolor: '#a78bfa' },
-                { label: 'Contractor', pct: pct(m.CP), val: fmt(m.CP), color: 'linear-gradient(180deg,#f59e0b,#ef4444)', h: barH(m.CP), tcolor: '#fbbf24' },
-                { label: 'Client', pct: pct(m.CV), val: fmt(m.CV), color: 'linear-gradient(180deg,#10b981,#2dd4bf)', h: barH(m.CV), tcolor: '#34d399' },
-                { label: 'Total', pct: '100', val: fmt(TP), color: 'linear-gradient(180deg,rgba(255,255,255,0.5),rgba(255,255,255,0.2))', h: 150, tcolor: txt1 },
-              ].map(bar => (
-                <div key={bar.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1 }}>
-                  <div style={{
-                    height: bar.h, width: '100%', borderRadius: '6px 6px 0 0',
-                    background: bar.color,
-                    display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 4,
-                    fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.9)',
-                    transition: 'height 1s ease',
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
-                  }}>
-                    {bar.val}
+                { label: 'Office', val: fmt(m.OP), pct: pct(m.OP), color: '#3b82f6' },
+                { label: 'Site', val: fmt(m.SP), pct: pct(m.SP), color: '#8b5cf6' },
+                { label: 'Contractor', val: fmt(m.CP), pct: pct(m.CP), color: '#f59e0b' },
+                { label: 'Visitor', val: fmt(m.CV), pct: pct(m.CV), color: '#10b981' },
+              ].map(item => (
+                <div key={item.label} style={{
+                  background: 'rgba(255,255,255,0.04)',
+                  border: `1px solid ${item.color}33`,
+                  borderRadius: 8, padding: '8px 10px',
+                  textAlign: 'center',
+                }}>
+                  <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, color: txt2, marginBottom: 3 }}>
+                    {item.label}
                   </div>
-                  <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, color: txt2 }}>{bar.label}</div>
-                  <div style={{ fontFamily: "'Orbitron',monospace", fontSize: 9, fontWeight: 700, color: bar.tcolor }}>
-                    {bar.pct}%
+                  <div style={{ fontFamily: "'Orbitron',monospace", fontWeight: 800, fontSize: 13, color: item.color, marginBottom: 2 }}>
+                    {item.val}
+                  </div>
+                  <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 8, color: txt2 }}>
+                    {item.pct}%
                   </div>
                 </div>
-              ))}
-            </div>
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 4 }}>
-              {[['#60a5fa','Office'],['#a78bfa','Site'],['#fbbf24','Contractor'],['#34d399','Client/Visitor']].map(([c,l]) => (
-                <span key={l} style={{ fontFamily: "'Inter',sans-serif", fontSize: 9, color: c as string }}>⬤ {l}</span>
               ))}
             </div>
           </div>

@@ -1,11 +1,12 @@
 import { ReactNode } from 'react';
 import {
   AreaChart, Area, BarChart, Bar, RadarChart, Radar, PolarGrid,
-  PolarAngleAxis, XAxis, YAxis, CartesianGrid,
+  PolarAngleAxis, XAxis, YAxis, CartesianGrid, LineChart, Line,
   Tooltip, Legend, ResponsiveContainer, PolarRadiusAxis,
 } from 'recharts';
 import { useDashboard } from '../context/DashboardContext';
 import { KpiCard } from '../components/KpiCard';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 
 function fmt(n: number) { return n.toLocaleString(); }
 
@@ -20,9 +21,13 @@ export function Analysis() {
 
   const SectionTitle = ({ children }: { children: ReactNode }) => (
     <div style={{
-      fontFamily: "'Vazirmatn',sans-serif", fontSize: 11, fontWeight: 700,
-      color: txt2, textTransform: 'uppercase', letterSpacing: '0.8px',
-      marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8,
+      fontFamily: "'Vazirmatn',sans-serif", fontSize: 12, fontWeight: 800,
+      color: txt1, textTransform: 'uppercase', letterSpacing: '1px',
+      marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8,
+      background: darkMode ? 'rgba(59,130,246,0.08)' : 'rgba(37,99,235,0.08)',
+      border: `1px solid ${darkMode ? 'rgba(59,130,246,0.15)' : 'rgba(37,99,235,0.15)'}`,
+      padding: '10px 14px',
+      borderRadius: 10,
     }}>
       {children}
       <div style={{ flex: 1, height: 1, background: border }} />
@@ -37,7 +42,8 @@ export function Analysis() {
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8, padding: '13px 16px',
         borderBottom: `1px solid ${border}`, fontWeight: 700, fontSize: 12, color: txt1,
-        fontFamily: "'Inter',sans-serif",
+        fontFamily: "'Orbitron',monospace",
+        letterSpacing: '0.5px',
       }}>
         {title}
       </div>
@@ -80,6 +86,115 @@ export function Analysis() {
         <KpiCard label="LTSR"           value={m.LTSR}      sub="per 200k man-hrs"   variant="cyan"   dark={darkMode} />
         <KpiCard label="LTI Free MH"    value={fmt(m.CombMH)} sub="cumulative"        variant="green"  dark={darkMode} />
       </div>
+
+      <SectionTitle>📈 Trend Analysis — تحلیل روند شاخص‌ها</SectionTitle>
+
+      {/* Trend Comparison Charts */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+        {/* Lagging Indicators Trend */}
+        <Card title={<><span>📉</span> Lagging Indicators Trend — روند شاخص‌های واکنشی</>}>
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={chartData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
+              <defs>
+                <linearGradient id="ltiGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#ef4444" stopOpacity={0.4}/>
+                  <stop offset="100%" stopColor="#ef4444" stopOpacity={0.02}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke={gridC} />
+              <XAxis dataKey="month" tick={{ fill: txt2, fontSize: 9 }} tickLine={false} />
+              <YAxis tick={{ fill: txt2, fontSize: 9 }} tickLine={false} axisLine={false} />
+              <Tooltip
+                contentStyle={{ background: darkMode ? '#0f1a2e' : '#fff', border: `1px solid ${border}`, borderRadius: 8, fontSize: 10 }}
+                formatter={(v: number) => [fmt(v), '']}
+              />
+              <Legend wrapperStyle={{ fontSize: 9 }} />
+              <Line type="monotone" dataKey="LTI" stroke="#ef4444" strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} name="LTI" />
+              <Line type="monotone" dataKey="MTC" stroke="#f59e0b" strokeWidth={2.5} dot={{ r: 3 }} name="MTC" />
+              <Line type="monotone" dataKey="FAC" stroke="#8b5cf6" strokeWidth={2.5} dot={{ r: 3 }} name="FAC" />
+              <Line type="monotone" dataKey="NM" stroke="#06b6d4" strokeWidth={2} dot={false} name="Near Miss" />
+            </LineChart>
+          </ResponsiveContainer>
+        </Card>
+
+        {/* Leading Indicators Trend */}
+        <Card title={<><span>📈</span> Leading Indicators Trend — روند شاخص‌های پیشگیرانه</>}>
+          <ResponsiveContainer width="100%" height={220}>
+            <AreaChart data={chartData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
+              <defs>
+                <linearGradient id="htrGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0.02}/>
+                </linearGradient>
+                <linearGradient id="scGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.01}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke={gridC} />
+              <XAxis dataKey="month" tick={{ fill: txt2, fontSize: 9 }} tickLine={false} />
+              <YAxis tick={{ fill: txt2, fontSize: 9 }} tickLine={false} axisLine={false} />
+              <Tooltip
+                contentStyle={{ background: darkMode ? '#0f1a2e' : '#fff', border: `1px solid ${border}`, borderRadius: 8, fontSize: 10 }}
+                formatter={(v: number) => [fmt(v), '']}
+              />
+              <Legend wrapperStyle={{ fontSize: 9 }} />
+              <Area type="monotone" dataKey="HTR" stroke="#10b981" fill="url(#htrGrad)" strokeWidth={2} dot={{ r: 2 }} name="Training MH" />
+              <Area type="monotone" dataKey="SC" stroke="#f59e0b" fill="url(#scGrad)" strokeWidth={2} dot={false} name="Stop Card" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </Card>
+      </div>
+
+      {/* Incident and Safety Activity Trends */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+        {/* Personnel Trend */}
+        <Card title={<><span>👥</span> Personnel Trend — روند نیروی انسانی (میانگین روزانه)</>}>
+          <ResponsiveContainer width="100%" height={200}>
+            <AreaChart data={chartData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
+              <defs>
+                <linearGradient id="opGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                </linearGradient>
+                <linearGradient id="spGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke={gridC} />
+              <XAxis dataKey="month" tick={{ fill: txt2, fontSize: 9 }} tickLine={false} />
+              <YAxis tick={{ fill: txt2, fontSize: 9 }} tickLine={false} axisLine={false} />
+              <Tooltip
+                contentStyle={{ background: darkMode ? '#0f1a2e' : '#fff', border: `1px solid ${border}`, borderRadius: 8, fontSize: 10 }}
+                formatter={(v: number) => [(v as any).toFixed(0), '']}
+              />
+              <Legend wrapperStyle={{ fontSize: 9 }} />
+              <Area type="monotone" dataKey="OP" stroke="#3b82f6" fill="url(#opGrad)" strokeWidth={2} dot={{ r: 2 }} name="Office" />
+              <Area type="monotone" dataKey="SP" stroke="#8b5cf6" fill="url(#spGrad)" strokeWidth={2} dot={false} name="Site" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </Card>
+
+        {/* Unsafe Acts/Conditions Trend */}
+        <Card title={<><span>⚠️</span> UAC Trend — روند اعمال و شرایط ناایمن</>}>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={chartData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke={gridC} />
+              <XAxis dataKey="month" tick={{ fill: txt2, fontSize: 9 }} tickLine={false} />
+              <YAxis tick={{ fill: txt2, fontSize: 9 }} tickLine={false} axisLine={false} />
+              <Tooltip
+                contentStyle={{ background: darkMode ? '#0f1a2e' : '#fff', border: `1px solid ${border}`, borderRadius: 8, fontSize: 10 }}
+                formatter={(v: number) => [fmt(v), 'Count']}
+              />
+              <Legend wrapperStyle={{ fontSize: 9 }} />
+              <Bar dataKey="UAC" fill="#ec4899" radius={[4,4,0,0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+      </div>
+
+      <SectionTitle>📊 Historical Trend Analysis — تحلیل روند تاریخی</SectionTitle>
 
       {/* Charts row 1 */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
@@ -167,6 +282,83 @@ export function Analysis() {
       </div>
 
       <SectionTitle>⚖️ Leading vs Lagging Ratio — نسبت شاخص‌های پیشگیرانه به واکنشی</SectionTitle>
+
+      {/* Trend Summary Section */}
+      <SectionTitle>🔄 Period Comparison — مقایسه با دوره قبلی</SectionTitle>
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+        gap: 12,
+        marginBottom: 20,
+      }}>
+        {(() => {
+          const getPrevValue = (key: string): number => {
+            if (monthly.length < 2) return 0;
+            const prev = monthly[monthly.length - 2];
+            return (prev as any)[key] as number || 0;
+          };
+
+          const calculateChange = (current: number, previous: number) => {
+            if (previous === 0) return { change: 0, trend: 'neutral' as const };
+            const change = ((current - previous) / previous) * 100;
+            return {
+              change: Math.abs(change),
+              trend: change > 5 ? 'up' as const : change < -5 ? 'down' as const : 'neutral' as const,
+            };
+          };
+
+          const metrics = [
+            { label: 'LTI Cases', key: 'LTI', current: m.LTI, icon: '🚑', color: '#ef4444', goodTrend: 'down' },
+            { label: 'Near Miss', key: 'NM', current: m.NM, icon: '⚡', color: '#f59e0b', goodTrend: 'down' },
+            { label: 'Training MH', key: 'HTR', current: m.HTR, icon: '📚', color: '#10b981', goodTrend: 'up' },
+            { label: 'Stop Cards', key: 'SC', current: m.SC, icon: '🏃', color: '#f59e0b', goodTrend: 'up' },
+          ];
+
+          return metrics.map(metric => {
+            const prev = getPrevValue(metric.key);
+            const { change, trend } = calculateChange(metric.current, prev);
+            const isGood = (metric.goodTrend === 'up' && trend === 'up') || (metric.goodTrend === 'down' && trend === 'down');
+
+            return (
+              <div
+                key={metric.label}
+                style={{
+                  background: cardBg,
+                  border: `1.5px solid ${isGood ? 'rgba(16,185,129,0.4)' : trend === 'down' && metric.goodTrend === 'down' ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.3)'}`,
+                  borderRadius: 12,
+                  padding: 12,
+                  textAlign: 'center',
+                  backdropFilter: 'blur(12px)',
+                  transition: 'all 0.3s',
+                }}
+              >
+                <div style={{ fontSize: 18, marginBottom: 6 }}>{metric.icon}</div>
+                <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 10, color: txt2, marginBottom: 4 }}>
+                  {metric.label}
+                </div>
+                <div style={{ fontFamily: "'Orbitron',monospace", fontWeight: 900, fontSize: 16, color: metric.color, marginBottom: 6 }}>
+                  {fmt(metric.current)}
+                </div>
+                {trend !== 'neutral' && (
+                  <div style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3,
+                    padding: '4px 8px', borderRadius: 6,
+                    background: trend === 'up' ? 'rgba(239,68,68,0.15)' : 'rgba(16,185,129,0.15)',
+                    color: trend === 'up' ? '#ef4444' : '#10b981',
+                    fontFamily: "'Orbitron',monospace",
+                    fontSize: 10,
+                    fontWeight: 700,
+                  }}>
+                    {trend === 'up' ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                    <span>{change.toFixed(1)}%</span>
+                  </div>
+                )}
+              </div>
+            );
+          });
+        })()}
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
         <Card title={<><span>⚖️</span> Proactive vs Reactive Balance</>}>

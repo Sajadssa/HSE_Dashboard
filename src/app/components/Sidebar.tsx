@@ -16,10 +16,10 @@ const NAV = [
 export function Sidebar() {
   const { darkMode, sidebarOpen, toggleSidebar } = useDashboard();
 
-  const bg      = darkMode ? '#0c1322' : '#1e3a5f';
-  const border  = darkMode ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.15)';
-  const txtMute = darkMode ? '#6b7fa3' : '#9ab0cc';
-  const txtMain = darkMode ? '#c9d8f0' : '#e8f0fb';
+  const bg      = darkMode ? 'linear-gradient(180deg,#0a0f1e,#0d1429)' : 'linear-gradient(180deg,#1a2f52,#1f3f63)';
+  const border  = darkMode ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.12)';
+  const txtMute = darkMode ? '#7fa3b8' : '#a8c1dc';
+  const txtMain = darkMode ? '#d4e3f7' : '#f0f7ff';
 
   return (
     <aside

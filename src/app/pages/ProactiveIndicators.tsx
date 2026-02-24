@@ -5,8 +5,17 @@ import { IndicatorCard } from '../components/IndicatorCard';
 
 function fmt(n: number) { return n.toLocaleString(); }
 
+function calculateTrend(current: number, previous: number): { trend: 'up' | 'down' | 'neutral'; percent: number } {
+  if (previous === 0) return { trend: 'neutral', percent: 0 };
+  const change = ((current - previous) / previous) * 100;
+  return {
+    trend: change > 0.5 ? 'up' : change < -0.5 ? 'down' : 'neutral',
+    percent: change,
+  };
+}
+
 export function ProactiveIndicators() {
-  const { metrics: m, darkMode } = useDashboard();
+  const { metrics: m, monthly, darkMode } = useDashboard();
 
   const txt1   = darkMode ? '#e2e8f0' : '#0f1e35';
   const txt2   = darkMode ? '#64748b' : '#4a6080';
@@ -157,12 +166,18 @@ export function ProactiveIndicators() {
       <SectionTitle>📊 Cumulative Proactive Summary — خلاصه تجمعی</SectionTitle>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(130px,1fr))', gap: 10 }}>
-        <KpiCard label="Stop Card (Cumul.)"     value={fmt(m.CombSC)}   sub="incl. 539 historical" variant="orange" dark={darkMode} />
-        <KpiCard label="Training MH (Cumul.)"   value={fmt(m.CombHTR)}  sub="incl. 3,471 historical" variant="blue" dark={darkMode} />
-        <KpiCard label="HSE Meeting (Cumul.)"   value={fmt(m.CombHSEM)} sub="incl. 58 historical" variant="cyan" dark={darkMode} />
-        <KpiCard label="PTW Total (Cumul.)"     value={fmt(m.CombPTW)}  sub="incl. 3,992 historical" variant="purple" dark={darkMode} />
-        <KpiCard label="Audit (Cumul.)"         value={fmt(m.CombAud)}  sub="incl. 3 historical" variant="green" dark={darkMode} />
-        <KpiCard label="Drill (Cumul.)"         value={fmt(m.CombDrl)}  sub="incl. 38 historical" variant="green" dark={darkMode} />
+        <KpiCard label="Stop Card (Cumul.)"     value={fmt(m.CombSC)}   sub="incl. 539 historical" variant="orange" dark={darkMode}
+          trend="up" />
+        <KpiCard label="Training MH (Cumul.)"   value={fmt(m.CombHTR)}  sub="incl. 3,471 historical" variant="blue" dark={darkMode}
+          trend={calculateTrend(m.HTR, m.CombHTR > 0 ? m.CombHTR / 24 : 0).trend} />
+        <KpiCard label="HSE Meeting (Cumul.)"   value={fmt(m.CombHSEM)} sub="incl. 58 historical" variant="cyan" dark={darkMode}
+          trend="up" />
+        <KpiCard label="PTW Total (Cumul.)"     value={fmt(m.CombPTW)}  sub="incl. 3,992 historical" variant="purple" dark={darkMode}
+          trend="up" />
+        <KpiCard label="Audit (Cumul.)"         value={fmt(m.CombAud)}  sub="incl. 3 historical" variant="green" dark={darkMode}
+          trend="up" />
+        <KpiCard label="Drill (Cumul.)"         value={fmt(m.CombDrl)}  sub="incl. 38 historical" variant="green" dark={darkMode}
+          trend="up" />
       </div>
     </div>
   );

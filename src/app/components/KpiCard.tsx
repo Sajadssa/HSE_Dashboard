@@ -1,6 +1,8 @@
 import { ReactNode } from 'react';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 
 type Variant = 'blue' | 'green' | 'red' | 'orange' | 'purple' | 'cyan';
+type TrendType = 'up' | 'down' | 'neutral';
 
 interface Props {
   label: string;
@@ -11,6 +13,8 @@ interface Props {
   icon?: ReactNode;
   dark?: boolean;
   tooltip?: string;
+  trend?: TrendType;
+  trendPercent?: number;
 }
 
 const COLORS: Record<Variant, { top: string; val: string; bg: string; border: string }> = {
@@ -22,11 +26,14 @@ const COLORS: Record<Variant, { top: string; val: string; bg: string; border: st
   cyan:   { top: 'linear-gradient(90deg,#06b6d4,#3b82f6)', val: '#22d3ee', bg: 'rgba(6,182,212,0.07)',  border: 'rgba(6,182,212,0.2)'  },
 };
 
-export function KpiCard({ label, labelFa, value, sub, variant = 'blue', icon, dark = true, tooltip }: Props) {
+export function KpiCard({ label, labelFa, value, sub, variant = 'blue', icon, dark = true, tooltip, trend, trendPercent }: Props) {
   const c = COLORS[variant];
   const bg     = dark ? `rgba(255,255,255,0.04)` : 'rgba(255,255,255,0.65)';
   const border = `1px solid ${c.border}`;
   const txt2   = dark ? '#64748b' : '#6b7a96';
+  
+  const trendColor = trend === 'up' ? '#10b981' : trend === 'down' ? '#ef4444' : 'transparent';
+  const trendBg = trend === 'up' ? 'rgba(16,185,129,0.1)' : trend === 'down' ? 'rgba(239,68,68,0.1)' : 'transparent';
 
   return (
     <div
@@ -58,10 +65,25 @@ export function KpiCard({ label, labelFa, value, sub, variant = 'blue', icon, da
         <div style={{ flex: 1 }}>
           <div style={{
             fontFamily: "'Vazirmatn',sans-serif", fontSize: 10, color: txt2, fontWeight: 500,
-            marginBottom: 8, lineHeight: 1.5,
+            marginBottom: 8, lineHeight: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
-            {label}
-            {labelFa && <div style={{ fontSize: 9 }}>{labelFa}</div>}
+            <div>
+              {label}
+              {labelFa && <div style={{ fontSize: 9 }}>{labelFa}</div>}
+            </div>
+            {trend && trend !== 'neutral' && (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 2,
+                padding: '2px 6px', borderRadius: 6,
+                background: trendBg,
+                color: trendColor,
+                fontFamily: "'Orbitron',monospace",
+                fontSize: 8, fontWeight: 700,
+              }}>
+                {trend === 'up' ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                {trendPercent !== undefined && <span>{trendPercent > 0 ? '+' : ''}{trendPercent.toFixed(1)}%</span>}
+              </div>
+            )}
           </div>
           <div style={{
             fontFamily: "'Orbitron',monospace", fontWeight: 900,

@@ -113,7 +113,7 @@ export function Report() {
     <div>
       {/* Quick navigation links */}
       <SectionTitle>🔗 Quick Navigation — پیوندهای سریع</SectionTitle>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 10, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 12, marginBottom: 24 }}>
         {QuickLinks.map(link => {
           const Icon = link.icon;
           return (
@@ -121,42 +121,70 @@ export function Report() {
               key={link.to}
               onClick={() => navigate(link.to)}
               style={{
-                background: cardBg, border: `1px solid ${border}`,
-                borderRadius: 12, padding: '14px 16px',
+                background: cardBg, border: `2px solid ${link.color}33`,
+                borderRadius: 14, padding: '16px 18px',
                 cursor: 'pointer', textAlign: 'left',
-                display: 'flex', alignItems: 'center', gap: 12,
-                transition: 'all 0.25s', backdropFilter: 'blur(12px)',
+                display: 'flex', alignItems: 'center', gap: 14,
+                transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)', backdropFilter: 'blur(12px)',
+                position: 'relative',
+                overflow: 'hidden',
               }}
               onMouseEnter={e => {
                 const el = e.currentTarget as HTMLButtonElement;
-                el.style.transform = 'translateY(-2px)';
-                el.style.boxShadow = `0 8px 24px rgba(0,0,0,0.3)`;
-                el.style.borderColor = link.color + '55';
+                el.style.transform = 'translateY(-4px)';
+                el.style.boxShadow = `0 12px 32px ${link.color}40`;
+                el.style.borderColor = link.color + '77';
+                el.style.background = cardBg;
               }}
               onMouseLeave={e => {
                 const el = e.currentTarget as HTMLButtonElement;
                 el.style.transform = 'translateY(0)';
                 el.style.boxShadow = 'none';
-                el.style.borderColor = border;
+                el.style.borderColor = link.color + '33';
               }}
             >
+              {/* Animated background gradient */}
               <div style={{
-                width: 38, height: 38, borderRadius: 10, flexShrink: 0,
-                background: link.color + '22',
-                border: `1px solid ${link.color}44`,
+                position: 'absolute', inset: 0,
+                background: `linear-gradient(135deg, ${link.color}15, ${link.color}08)`,
+                opacity: 0,
+                transition: 'opacity 0.3s',
+              }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLDivElement).style.opacity = '1';
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLDivElement).style.opacity = '0';
+                }}
+              />
+              
+              <div style={{
+                width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+                background: `linear-gradient(135deg, ${link.color}25, ${link.color}10)`,
+                border: `1.5px solid ${link.color}55`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'all 0.3s',
               }}>
-                <Icon size={18} color={link.color} />
+                <Icon size={20} color={link.color} />
               </div>
-              <div>
-                <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 12, fontWeight: 700, color: txt1 }}>
+              <div style={{ flex: 1, position: 'relative', zIndex: 1 }}>
+                <div style={{ fontFamily: "'Inter',sans-serif", fontSize: 13, fontWeight: 700, color: txt1, marginBottom: 4 }}>
                   {link.label}
                 </div>
-                <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 9, color: txt2, marginTop: 2 }}>
+                <div style={{ fontFamily: "'Vazirmatn',sans-serif", fontSize: 10, color: txt2 }}>
                   {link.desc}
                 </div>
               </div>
-              <ExternalLink size={13} color={txt2} style={{ marginRight: 'auto', flexShrink: 0 }} />
+              <ExternalLink size={16} color={link.color} style={{ flexShrink: 0, opacity: 0.7, transition: 'all 0.3s' }}
+                onMouseEnter={e => {
+                  (e.currentTarget as SVGElement).style.opacity = '1';
+                  (e.currentTarget as SVGElement).style.transform = 'translateX(3px)';
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as SVGElement).style.opacity = '0.7';
+                  (e.currentTarget as SVGElement).style.transform = 'translateX(0)';
+                }}
+              />
             </button>
           );
         })}
